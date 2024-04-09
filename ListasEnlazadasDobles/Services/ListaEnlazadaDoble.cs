@@ -17,5 +17,17 @@ namespace ListasEnlazadasDobles.Services
 
         public bool IsEmpty => PrimerNodo == null;
 
+        public Nodo Siguiente()
+        {
+            NodoActual = NodoActual.LigaSiguiente ?? UltimoNodo;
+            return NodoActual;
+        }
+
+        public Nodo Anterior()
+        {
+            NodoActual = NodoActual.LigaAnterior ?? PrimerNodo;
+            return NodoActual;
+        }
+
     }
 }

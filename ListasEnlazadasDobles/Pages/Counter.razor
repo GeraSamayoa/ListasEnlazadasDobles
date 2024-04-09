@@ -1,18 +1,99 @@
 ﻿@page "/counter"
+@using ListasEnlazadasDobles.Models
+@using ListasEnlazadasDobles.Services
 
 <PageTitle>Counter</PageTitle>
 
-<h1>Counter</h1>
+@* Reproductor *@
 
-<p role="status">Current count: @currentCount</p>
+<div class="d-flex justify-content-center mb-2">
+    <iframe src="@YoutubeId" width="800" height="400" frameborder="0" allowfullscreen></iframe>
+</div>
 
-<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+
+@* botones *@
+
+<div class="d-flex justify-content-center mb-2">
+    <button @onclick="First" class="me-2 btn btn-primary">Primero</button>
+    <button @onclick="Before" class="me-2 btn btn-success">Anterior</button>
+    <button @onclick="Next" class="me-2 btn btn-danger">Siguiente</button>
+    <button @onclick="Last" class="me-2 btn btn-warning">Final</button>
+</div>
+
+
+
+<p>@Mensaje</p>
 
 @code {
-    private int currentCount = 0;
+    ListaEnlazadaDoble lista;
 
-    private void IncrementCount()
+    string YoutubeLink = string.Empty;
+    string YoutubeId = string.Empty;
+    string Mensaje = string.Empty;
+
+    protected override void OnInitialized()
     {
-        currentCount++;
+        lista = new ListaEnlazadaDoble();
     }
+
+    void PlayVideo()
+    {
+        if (lista.NodoActual is not null)
+        {
+            YoutubeLink = lista.NodoActual.Informacion;
+
+            var videoId = GetVideoId(YoutubeLink);
+
+            if (!string.IsNullOrEmpty(videoId))
+            {
+                YoutubeId = $"https://www.youtube.com/embed/{videoId}";
+            }
+
+        }
+
+
+    }
+
+    string GetVideoId(string link)
+    {
+        //creamos un objeto de tipo Uri
+        var uri = new Uri(link);
+
+        // obtenemos el query string del uri
+        var query = uri.Query;
+
+        // obtenemos todos los parametros del query string
+        var queryparams = System.Web.HttpUtility.ParseQueryString(query);
+
+        var videoId = queryparams["v"];
+
+        return videoId;
+    }
+
+    void First()
+    {
+        lista.NodoActual = lista.PrimerNodo;
+        PlayVideo();
+    }
+
+    void Before()
+    {
+        lista.Anterior();
+        PlayVideo();
+    }
+
+    void Next()
+    {
+        lista.Siguiente();
+        PlayVideo();
+
+    }
+
+    void Last()
+    {
+        lista.NodoActual = lista.UltimoNodo;
+        PlayVideo();
+
+    }
+
 }
