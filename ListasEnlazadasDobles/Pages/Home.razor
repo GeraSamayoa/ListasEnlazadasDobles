@@ -1,12 +1,90 @@
 ﻿@page "/"
 
+@using ListasEnlazadasDobles.Services
+@using ListasEnlazadasDobles.Models
+
 <PageTitle>ListaEnlazadaDoble</PageTitle>
 
+<h3>Lista Enlazada Doble</h3>
 
+<input @bind="nuevoValor" placeholder="Ingrese un valor" />
+<button @onclick="AgregarAlInicio">Agregar Nodo al Inicio</button>
+
+<input @bind="posicionX" placeholder="Ingrese la posición después de la cual desea insertar" />
+<button @onclick="InsertarDespuesDePosicionX">Insertar Después de X</button>
+
+<button @onclick="QuitarAlFinal">Quitar Nodo al Final</button>
+
+<input @bind="datoEliminar" placeholder="Ingrese el dato a eliminar" />
+<button @onclick="EliminarNodoConDatoX">Eliminar Nodo con Dato X</button>
+
+@if (lista != null && !lista.IsEmpty)
+{
+    <ul>
+        @foreach (var nodo in nodos)
+        {
+            <li>@nodo.Informacion</li>
+        }
+    </ul>
+}
 
 @code {
+    private ListaEnlazadaDoble lista = new ListaEnlazadaDoble();
+    private List<Nodo> nodos = new List<Nodo>();
+    private string nuevoValor;
+    private int posicionX;
+    private object datoEliminar;
 
+    private void AgregarAlInicio()
+    {
+        if (!string.IsNullOrWhiteSpace(nuevoValor))
+        {
+            lista.AgregarAlInicio(nuevoValor);
+            ActualizarNodos();
+            nuevoValor = string.Empty;
+        }
+    }
 
+    private void InsertarDespuesDePosicionX()
+    {
+        if (!string.IsNullOrWhiteSpace(nuevoValor) && posicionX > 0)
+        {
+            lista.InsertarDespuesDePosicionX(posicionX, nuevoValor);
+            ActualizarNodos();
+            nuevoValor = string.Empty;
+            posicionX = 0;
+        }
+    }
+
+  
+
+    private void QuitarAlFinal()
+    {
+        lista.QuitarAlFinal();
+        ActualizarNodos();
+    }
+
+    private void EliminarNodoConDatoX()
+    {
+        if (datoEliminar != null)
+        {
+            lista.EliminarNodoConDatoX(datoEliminar);
+            ActualizarNodos();
+            datoEliminar = null;
+        }
+    }
+
+    private void ActualizarNodos()
+    {
+        nodos.Clear();
+        Nodo nodoActual = lista.PrimerNodo;
+        while (nodoActual != null)
+        {
+            nodos.Add(nodoActual);
+            nodoActual = nodoActual.LigaSiguiente;
+        }
+    }
 }
+
 
 
