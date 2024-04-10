@@ -1,12 +1,54 @@
 ﻿@page "/"
+@using ListasEnlazadasDobles.Models
+@using ListasEnlazadasDobles.Services
 
 <PageTitle>ListaEnlazadaDoble</PageTitle>
 
+<input type="text" class="form-control mb-2" @bind="Informacion" />
+
+
+<button class="btn btn-primary" @onclick="AgregarNodoInicio">
+    Agregar Nodo Al Inicio
+</button>
+
+<hr />
+
+<p class="bg-dark text-white">@Mensaje</p>
+
+<hr />
+
+<button class="btn btn-primary" @onclick="RecorrerLista">
+    Recorrer Lista
+    </button>
 
 
 @code {
 
+    public string Informacion { get; set; }
+
+    public ListaEnlazadaDoble Lista { get; set; } = new();
+
+    string Mensaje = string.Empty;
+
+
+    void AgregarNodoInicio()
+    {
+        var nuevoNodo = new Nodo(Informacion);
+
+        Mensaje = Lista.AgregarNodoAlInicio(nuevoNodo);
+        Informacion = string.Empty;
+        Mensaje = string.Empty;
+    }
+
+    void RecorrerLista()
+    {
+        var nuevoNodo = new Nodo(Informacion);
+
+        //guardamos lo que devuelve el metodo RecorrerLista para mostrarlo en la vista
+        Mensaje = Lista.RecorrerLista(nuevoNodo);
+        //Lista.RecorrerLista(nuevoNodo);
+    }
+
+
 
 }
-
-
