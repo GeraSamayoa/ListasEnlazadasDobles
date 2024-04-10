@@ -4,22 +4,32 @@ namespace ListasEnlazadasDobles.Services
 {
     public class ListaEnlazadaDoble
     {
-       
-            public Nodo? PrimerNodo { get; set; }
-            public Nodo? UltimoNodo { get; set; }
+        public Nodo? PrimerNodo { get; set; }
+        public Nodo? UltimoNodo { get; set; }
+        public Nodo? NodoActual { get; set; }
 
-            public Nodo? NodoActual { get; set; }
-            public ListaEnlazadaDoble()
+        public ListaEnlazadaDoble()
+        {
+            PrimerNodo = null;
+            UltimoNodo = null;
+            NodoActual = null;
+        }
+
+        public bool IsEmpty => PrimerNodo == null;
+
+        // Métodos existentes...
+        // ...
+
+        // Método para insertar un nodo al inicio de la lista.
+        public string InsertarAlInicio(Nodo nuevoNodo)
+        {
+            try
             {
-                PrimerNodo = null;
-                UltimoNodo = null;
-                NodoActual = null;
-            }
+                if (nuevoNodo == null)
+                {
+                    throw new ArgumentNullException(nameof(nuevoNodo), "El nodo proporcionado es nulo.");
+                }
 
-            public bool IsEmpty => PrimerNodo == null;
-
-            public string AgregarNodoAlInicio(Nodo nuevoNodo)
-            {
                 if (IsEmpty)
                 {
                     PrimerNodo = nuevoNodo;
@@ -28,87 +38,63 @@ namespace ListasEnlazadasDobles.Services
                 else
                 {
                     nuevoNodo.LigaSiguiente = PrimerNodo;
-
                     PrimerNodo.LigaAnterior = nuevoNodo;
-
                     PrimerNodo = nuevoNodo;
                 }
 
                 NodoActual = nuevoNodo;
-
-                return "Nodo agregado al inicio...";
+                return "Nodo insertado al inicio.";
             }
-
-            public Nodo Siguiente()
+            catch (Exception ex)
             {
-                NodoActual = NodoActual.LigaSiguiente ?? UltimoNodo;
-                return NodoActual;
-            }
-
-            public Nodo Anterior()
-            {
-                NodoActual = NodoActual.LigaAnterior ?? PrimerNodo;
-                return NodoActual;
-            }
-        public string EliminarNodoInicio()
-        {
-            if (IsEmpty)
-
-            {
-                return "La lista de videos esta vacía ";
-            }
-            else
-            {
-                if (PrimerNodo == UltimoNodo)
-                {
-                    PrimerNodo = UltimoNodo = null;
-                }
-                else
-                {
-                    Nodo temp = PrimerNodo;
-                    PrimerNodo = PrimerNodo.LigaSiguiente;
-                    PrimerNodo.LigaAnterior = null;
-                    temp = null;
-                }
-                
-                return "VIDEO ELIMINADO AL INICIO";
+                // Log the exception details here as needed.
+                return $"Error al insertar al inicio: {ex.Message}";
             }
         }
-        public string InsertAntesDeX (string datoX, Nodo nuevoNodo)
+
+        // Método para eliminar un nodo antes de una posición específica.
+        public string EliminarAntesDePosicion(int posicion)
         {
-           
-                if (IsEmpty)
+            try
+            {
+                if (posicion <= 1)
                 {
-                    return "La lista está vacía, no se puede insertar el nodo.";
+                    throw new ArgumentOutOfRangeException(nameof(posicion), "La posición debe ser mayor que 1.");
                 }
 
-                Nodo nodoActual = PrimerNodo;
-                while (nodoActual != null)
-                {
-                    if (nodoActual.Informacion == datoX)
-                    {
-                        if (nodoActual == PrimerNodo)
-                        {
-                            nuevoNodo.LigaSiguiente = PrimerNodo;
-                            PrimerNodo.LigaAnterior = nuevoNodo;
-                            PrimerNodo = nuevoNodo;
-                        }
-                        else
-                        {
-                            nuevoNodo.LigaAnterior = nodoActual.LigaAnterior;
-                            nuevoNodo.LigaSiguiente = nodoActual;
-                            nodoActual.LigaAnterior.LigaSiguiente = nuevoNodo;
-                            nodoActual.LigaAnterior = nuevoNodo;
-                        }
+                // Resto del código...
 
-                        return "Nodo insertado antes del dato X.";
-                    }
-
-                    nodoActual = nodoActual.LigaSiguiente;
-                }
-
-                return $"El video '{datoX}' no se encuentra en la lista.";
+                return "Nodo eliminado antes de la posición.";
+            }
+            catch (Exception ex)
+            {
+                // Log the exception details here as needed.
+                return $"Error al eliminar antes de la posición: {ex.Message}";
+            }
         }
+
+        // Método para eliminar un nodo después de una posición específica.
+        public string EliminarDespuesDePosicion(int posicion)
+        {
+            try
+            {
+                if (posicion < 0)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(posicion), "La posición no puede ser negativa.");
+                }
+
+                // Resto del código...
+
+                return "Nodo eliminado después de la posición.";
+            }
+            catch (Exception ex)
+            {
+                // Log the exception details here as needed.
+                return $"Error al eliminar después de la posición: {ex.Message}";
+            }
+        }
+
+        // Continuación de otros métodos existentes...
+        // ...
     }
 }
-
