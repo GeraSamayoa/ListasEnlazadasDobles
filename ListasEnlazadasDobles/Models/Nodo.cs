@@ -14,6 +14,5 @@
             Informacion = informacion;
             LigaSiguiente = null;
         }
-
     }
 }
