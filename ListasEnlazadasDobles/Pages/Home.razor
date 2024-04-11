@@ -5,21 +5,43 @@
 <PageTitle>ListaEnlazadaDoble</PageTitle>
 
 <input type="text" class="form-control mb-2" @bind="Informacion" />
-
+<input type="text" class="form-control mb-2" @bind="Dato"/>
+<input type="text" class="form-control mb-2" @bind="DatoBuscado" />
 
 <button class="btn btn-primary" @onclick="AgregarNodoInicio">
     Agregar Nodo Al Inicio
 </button>
+<button class="btn btn-success" @onclick="AgregarNodoDespuesDeDato">
+    Agregar Nodo Despues De Dato
+    </button>
+<button class="btn-txt extra" @onclick="RecorrerRecursivamente">Recorrido recursivo</button>
+<button class="btn btn-danger" @onclick="BuscarNodoPorDato">
+    Buscar Nodo Por Dato
+    </button>
+
+
 
 <hr />
 
 <p class="bg-dark text-white">@Mensaje</p>
+<p class="bg-dark text-white">@MensajeBuscar</p>
 
 <hr />
 
-<button class="btn btn-primary" @onclick="RecorrerLista">
-    Recorrer Lista
-    </button>
+<tbody>
+    @{
+        var contador = 1;
+    }
+
+    @foreach (var nodo in nodosAux)
+    {
+        <tr>
+            <th scope="row">@(contador++)</th>
+            <td>@nodo.Informacion</td>
+        </tr>
+    }
+
+</tbody>                
 
 
 @code {
@@ -29,6 +51,9 @@
     public ListaEnlazadaDoble Lista { get; set; } = new();
 
     string Mensaje = string.Empty;
+    string Dato = string.Empty;
+    string DatoBuscado = string.Empty;
+    string MensajeBuscar = string.Empty;
 
 
     void AgregarNodoInicio()
@@ -40,13 +65,35 @@
         Mensaje = string.Empty;
     }
 
-    void RecorrerLista()
+    // Llamar metode para inster un nodo despues de un dato especifico
+    void AgregarNodoDespuesDeDato()
     {
         var nuevoNodo = new Nodo(Informacion);
+        var dato = Dato;
 
-        //guardamos lo que devuelve el metodo RecorrerLista para mostrarlo en la vista
-        Mensaje = Lista.RecorrerLista(nuevoNodo);
-        //Lista.RecorrerLista(nuevoNodo);
+        Mensaje = Lista.InsertarDespuesDeUnDatoX(dato, nuevoNodo);
+        Informacion = string.Empty;
+        Dato = string.Empty;
+    }
+
+    // Metodo para buscar un nodo por su dato
+    void BuscarNodoPorDato()
+    {
+        var dato = DatoBuscado;
+        MensajeBuscar = Lista.BuscarNodo(dato);
+
+   
+
+        DatoBuscado = string.Empty;
+    }
+
+    // Método para recorrer la lista de forma recursiva
+    private List<Nodo> nodosAux = new List<Nodo>();
+
+    private void RecorrerRecursivamente()
+    {
+        nodosAux.Clear();
+        ListaEnlazadaDoble.RecorrerRecursivamente(Lista.PrimerNodo, nodosAux);
     }
 
 

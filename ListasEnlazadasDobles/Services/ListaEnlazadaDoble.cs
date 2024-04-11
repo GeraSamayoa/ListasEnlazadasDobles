@@ -37,16 +37,81 @@ namespace ListasEnlazadasDobles.Services
 
             return "Nodo agregado al inicio...";
         }
-        
 
-        //Metodo para recorrer la lista de forma recursiva
-        public string RecorrerLista(Nodo nodo)
+        // Metodo para insertar un nodo despues de un dato especifico string
+        public string InsertarDespuesDeUnDatoX(string dato, Nodo nuevoNodo)
+        {
+            if (IsEmpty)
+            {
+                return "Lista vacia...";
+            }
+
+            Nodo nodoActual = PrimerNodo;
+
+            while (nodoActual != null && nodoActual.Informacion != dato)
+            {
+                nodoActual = nodoActual.LigaSiguiente;
+            }
+
+            if (nodoActual == null)
+            {
+                return "Dato no encontrado...";
+            }
+
+            if (nodoActual == UltimoNodo)
+            {
+                nuevoNodo.LigaAnterior = UltimoNodo;
+                UltimoNodo.LigaSiguiente = nuevoNodo;
+                UltimoNodo = nuevoNodo;
+            }
+            else
+            {
+                nuevoNodo.LigaSiguiente = nodoActual.LigaSiguiente;
+                nodoActual.LigaSiguiente.LigaAnterior = nuevoNodo;
+                nodoActual.LigaSiguiente = nuevoNodo;
+                nuevoNodo.LigaAnterior = nodoActual;
+            }
+
+            NodoActual = nuevoNodo;
+
+            return "Nodo insertado despues de " + dato;
+        }
+
+        // Metodo para buscar un nodo por su informacion en una lista doblemente enlazada
+        public string BuscarNodo(string dato)
+        {
+            int index = 1;
+            if (IsEmpty)
+            {
+                return "Lista vacia...";
+            }
+
+            Nodo nodoActual = PrimerNodo;
+
+            while (nodoActual != null && nodoActual.Informacion != dato)
+            {
+                nodoActual = nodoActual.LigaSiguiente;
+                index++;
+            }
+
+            if (nodoActual == null)
+            {
+                return "Dato no encontrado...";
+            }
+
+            NodoActual = nodoActual;
+
+            return $"Nodo encontrado: {nodoActual.Informacion} en posicion {index}";
+        }
+
+        // Metodo para recorrer la lista recursivamente
+        public static void RecorrerRecursivamente(Nodo? nodo, List<Nodo> nodos)
         {
             if (nodo != null)
             {
-                return $"{nodo.Informacion} -> {RecorrerLista(nodo.LigaSiguiente)}";
+                nodos.Add(nodo); // Agregar el nodo a la lista
+                RecorrerRecursivamente(nodo.LigaSiguiente, nodos); // Llamada recursiva
             }
-            return "null";
         }
 
         public Nodo Siguiente()
