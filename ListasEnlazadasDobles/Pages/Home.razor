@@ -7,16 +7,30 @@
 
 <h3>Lista Enlazada Doble</h3>
 
-<input @bind="nuevoValor" placeholder="Ingrese un valor" />
-<button @onclick="AgregarAlInicio">Agregar Nodo al Inicio</button>
+<div style="margin-bottom: 10px;">
+    <input @bind="nuevoValor" placeholder="Ingrese un valor" />
+    <button @onclick="AgregarAlInicio">Agregar Nodo al Inicio</button>
+</div>
 
-<input @bind="posicionX" placeholder="Ingrese la posición después de la cual desea insertar" />
-<button @onclick="InsertarDespuesDePosicionX">Insertar Después de X</button>
+<div style="margin-bottom: 10px;">
+    <input @bind="posicionX" type="number" placeholder="Ingrese la posición después de la cual desea insertar" />
+    <input @bind="nuevoValor" placeholder="Ingrese un valor" />
+    <button @onclick="InsertarDespuesDePosicionX">Insertar Después de posición X</button>
+</div>
 
-<button @onclick="QuitarAlFinal">Quitar Nodo al Final</button>
+<div style="margin-bottom: 10px;">
+    <button @onclick="QuitarAlFinal">Quitar Nodo al Final</button>
+</div>
 
-<input @bind="datoEliminar" placeholder="Ingrese el dato a eliminar" />
-<button @onclick="EliminarNodoConDatoX">Eliminar Nodo con Dato X</button>
+<div style="margin-bottom: 10px;">
+    <input @bind="datoEliminar" placeholder="Ingrese el dato a eliminar" />
+    <button @onclick="EliminarAntesDeX">Eliminar Nodo con Dato X</button>
+</div>
+
+<div style="margin-bottom: 10px;">
+    <div style="color: green;">@mensaje</div>
+    <div style="color: red;">@error</div>
+</div>
 
 @if (lista != null && !lista.IsEmpty)
 {
@@ -31,53 +45,65 @@
 @code {
     private ListaEnlazadaDoble lista = new ListaEnlazadaDoble();
     private List<Nodo> nodos = new List<Nodo>();
-    private string nuevoValor;
+    private string? nuevoValor;
     private int posicionX;
-    private object datoEliminar;
+    private string? datoEliminar;
+    private string mensaje = "";
+    private string error = "";
 
-    private void AgregarAlInicio()
+    private void AgregarAlInicio()//Método que se ejecuta cuando el usuario hace clic en el botón "Agregar Nodo al Inicio". Agrega un nuevo nodo con el valor ingresado al inicio de la lista enlazada doble.
     {
         if (!string.IsNullOrWhiteSpace(nuevoValor))
         {
-            lista.AgregarAlInicio(nuevoValor);
+            mensaje = lista.AgregarAlInicio(nuevoValor);
             ActualizarNodos();
             nuevoValor = string.Empty;
         }
+        else
+        {
+            error = "Ingrese un valor válido.";
+        }
     }
 
-    private void InsertarDespuesDePosicionX()
+    private void InsertarDespuesDePosicionX()//Método que se ejecuta cuando el usuario hace clic en el botón "Insertar Después de posición X". Inserta un nuevo nodo con el valor ingresado después de la posición especificada en la lista enlazada doble.
     {
-        if (!string.IsNullOrWhiteSpace(nuevoValor) && posicionX > 0)
+        if (!string.IsNullOrWhiteSpace(nuevoValor))
         {
-            lista.InsertarDespuesDePosicionX(posicionX, nuevoValor);
+            mensaje = lista.InsertarDespuesDePosicionX(posicionX, nuevoValor);
             ActualizarNodos();
             nuevoValor = string.Empty;
             posicionX = 0;
         }
-    }
-
-  
-
-    private void QuitarAlFinal()
-    {
-        lista.QuitarAlFinal();
-        ActualizarNodos();
-    }
-
-    private void EliminarNodoConDatoX()
-    {
-        if (datoEliminar != null)
+        else
         {
-            lista.EliminarNodoConDatoX(datoEliminar);
-            ActualizarNodos();
-            datoEliminar = null;
+            error = "Ingrese un valor válido.";
         }
     }
 
-    private void ActualizarNodos()
+    private void QuitarAlFinal()//Método que se ejecuta cuando el usuario hace clic en el botón "Quitar
+    {
+        mensaje = lista.QuitarAlFinal();
+        ActualizarNodos();
+    }
+
+    private void EliminarAntesDeX()//Método que se ejecuta cuando el usuario hace clic en el botón "Eliminar Nodo con Dato X". Elimina el nodo que contiene el dato especificado antes de la posición especificada en la lista enlazada doble.
+    {
+        if (!string.IsNullOrEmpty(datoEliminar))
+        {
+            mensaje = lista.EliminarAntesDeX(datoEliminar);
+            ActualizarNodos();
+            datoEliminar = null;
+        }
+        else
+        {
+            error = "Ingrese un dato válido.";
+        }
+    }
+
+    private void ActualizarNodos()//Método que actualiza la lista de nodos con los nodos actuales presentes en la lista enlazada doble. Se utiliza para reflejar los cambios en la interfaz de usuario después de realizar operaciones en la lista enlazada.
     {
         nodos.Clear();
-        Nodo nodoActual = lista.PrimerNodo;
+        Nodo? nodoActual = lista.PrimerNodo;
         while (nodoActual != null)
         {
             nodos.Add(nodoActual);
@@ -85,6 +111,8 @@
         }
     }
 }
+
+
 
 
 
