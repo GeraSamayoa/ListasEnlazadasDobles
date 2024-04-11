@@ -43,7 +43,7 @@ namespace ListasEnlazadasDobles.Services
         {
             if (IsEmpty)
             {
-                return "Lista vacia...";
+                return "La lista esta vacia";
             }
 
             Nodo nodoActual = PrimerNodo;
@@ -55,7 +55,7 @@ namespace ListasEnlazadasDobles.Services
 
             if (nodoActual == null)
             {
-                return "Dato no encontrado...";
+                return "Dato no encontrado";
             }
 
             if (nodoActual == UltimoNodo)
@@ -80,13 +80,13 @@ namespace ListasEnlazadasDobles.Services
         // Metodo para buscar un nodo por su informacion en una lista doblemente enlazada
         public string BuscarNodo(string dato)
         {
-            int index = 1;
             if (IsEmpty)
             {
-                return "Lista vacia...";
+                return "Lista vacia no hay elementos para buscar";
             }
 
-            Nodo nodoActual = PrimerNodo;
+            int index = 1;
+            Nodo? nodoActual = PrimerNodo;
 
             while (nodoActual != null && nodoActual.Informacion != dato)
             {
@@ -96,21 +96,19 @@ namespace ListasEnlazadasDobles.Services
 
             if (nodoActual == null)
             {
-                return "Dato no encontrado...";
+                return $"Dato {dato} no encontrado";
             }
-
-            NodoActual = nodoActual;
 
             return $"Nodo encontrado: {nodoActual.Informacion} en posicion {index}";
         }
 
         // Metodo para recorrer la lista recursivamente
-        public static void RecorrerRecursivamente(Nodo? nodo, List<Nodo> nodos)
+        public static void RecorrerRecursivamente(Nodo? nodoActual, List<Nodo> nodos)
         {
-            if (nodo != null)
+            if (nodoActual != null)
             {
-                nodos.Add(nodo); // Agregar el nodo a la lista
-                RecorrerRecursivamente(nodo.LigaSiguiente, nodos); // Llamada recursiva
+                nodos.Add(nodoActual); // Agregar el nodo a la lista
+                RecorrerRecursivamente(nodoActual.LigaSiguiente, nodos); 
             }
         }
 
