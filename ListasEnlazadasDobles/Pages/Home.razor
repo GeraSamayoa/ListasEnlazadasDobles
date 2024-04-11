@@ -18,9 +18,25 @@
     <button class="btn btn-primary" @onclick="InsertBeforeX">Insertar Antes de X Video</button>
 </div>
 
+@* Insertar en una posición específica *@
+<div class="row mt-4">
+    <div class="col-md-4">
+        <input type="text" class="form-control mb-2" @bind="NuevoVideo" placeholder="Ingrese el url del nuevo video" />
+    </div>
+    <div class="col-md-4">
+        <input type="number" class="form-control mb-2" @bind="PosicionX" placeholder="Posición donde insertar" />
+    </div>
+    <div class="col-md-4">
+        <button class="btn btn-secondary" @onclick="InsertEnPosicion">Insertar en Posición </button>
+    </div>
+</div>
+
+
+
+
 @* botones *@
 <div class="d-flex justify-content-center mb-4">
-    <!-- Agregado mb-4 -->
+
     <button @onclick="First" class="me-2 btn btn-primary">Primero</button>
     <button @onclick="Before" class="me-2 btn btn-success">Anterior</button>
     <button @onclick="Next" class="me-2 btn btn-danger">Siguiente</button>
@@ -137,10 +153,27 @@
         }
 
         var nuevoNodo = new Nodo(NuevoVideo);
-        Mensaje = lista.InsertAntesDeX(DatoX, nuevoNodo);
+        Mensaje = lista.InsertarAntesP(DatoX, nuevoNodo);
         PlayVideo();
     }
 
+    int PosicionX;
+
+    void InsertEnPosicion()
+    {
+        if (!string.IsNullOrEmpty(NuevoVideo) && PosicionX > 0)
+        {
+            var mensaje = lista.InsertarEnPosicion(PosicionX, NuevoVideo);
+            Mensaje = mensaje;
+
+            NuevoVideo = string.Empty; 
+
+        }
+        else
+        {
+            Mensaje = "Debe ingresar un url y una posición válida.";
+        }
+    }
 
 }
 
