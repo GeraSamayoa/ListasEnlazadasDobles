@@ -1,146 +1,62 @@
 ﻿@page "/"
-@using ListasEnlazadasDobles.Models
-@using ListasEnlazadasDobles.Services
 
-<PageTitle>REPRODUCTOR DE VIDEO</PageTitle>
+@using Listas.Services
+@inject IJSRuntime JSRuntime
 
-@* Reproductor *@
-<div class="d-flex justify-content-center mb-4">
-    <!-- Agregado mb-4 -->
-    <iframe src="@YoutubeId" width="800" height="400" frameborder="0" allowfullscreen></iframe>
+<h3>Gestión de Lista Enlazada Simple</h3>
+
+<div>
+    <label for="valorNodo">Valor del Nodo:</label>
+    <input type="number" id="valorNodo" @bind="valorNodo" />
 </div>
 
-@*InsertarAntesdeXvideo*@
-<div class="row mb-4">
-    <!-- Agregado mb-4 -->
-    <input type="text" class="form-control mb-2" @bind-value="DatoX" placeholder="Ingrese el url del video antes del cual desea insertar" />
-    <input type="text" class="form-control mb-2" @bind-value="NuevoVideo" placeholder="Ingrese el dato del nuevo video a insertar" />
-    <button class="btn btn-primary" @onclick="InsertBeforeX">Insertar Antes de X Video</button>
-</div>
+<button @onclick="AgregarAlInicio">Agregar al Inicio</button>
+<button @onclick="EliminarAntesDe">Eliminar Antes De</button>
+<button @onclick="EliminarDespuesDe">Eliminar Después De</button>
 
-@* botones *@
-<div class="d-flex justify-content-center mb-4">
-    <!-- Agregado mb-4 -->
-    <button @onclick="First" class="me-2 btn btn-primary">Primero</button>
-    <button @onclick="Before" class="me-2 btn btn-success">Anterior</button>
-    <button @onclick="Next" class="me-2 btn btn-danger">Siguiente</button>
-    <button @onclick="Last" class="me-2 btn btn-warning">Final</button>
-    <button @onclick="DeleteFirst" class="me-2 btn btn-danger">Eliminar Primero</button>
-</div>
-
-@* para guardar *@
-<div class="row mb-4">
-    <!-- Agregado mb-4 -->
-    <input type="text" class="form-control mb-2" @bind-value="YoutubeLink" />
-    <button class="btn btn-success" @onclick="Save">Guardar</button>
-</div>
-
-<p>@Mensaje</p>
-
-@code{
-    ListaEnlazadaDoble lista;
-
-    string YoutubeLink = string.Empty;
-    string YoutubeId = string.Empty;
-    string Mensaje = string.Empty;
-
-    protected override void OnInitialized()
-    {
-        lista = new ListaEnlazadaDoble();
-    }
-
-    void PlayVideo()
-    {
-        if (lista.NodoActual is not null)
+@if (listaEnlazada != null)
+{
+    <h4>Nodos en la Lista:</h4>
+    <ul>
+        @foreach (var nodo in listaEnlazada)
         {
-            YoutubeLink = lista.NodoActual.Informacion;
-
-            var videoId = GetVideoId(YoutubeLink);
-
-            if (!string.IsNullOrEmpty(videoId))
-            {
-                YoutubeId = $"https://www.youtube.com/embed/{videoId}";
-            }
-
+            <li>@nodo.Valor</li>
         }
-
-
-    }
-
-    string GetVideoId(string link)
-    {
-        //creamos un objeto de tipo Uri
-        var uri = new Uri(link);
-
-        // obtenemos el query string del uri
-        var query = uri.Query;
-
-        // obtenemos todos los parametros del query string
-        var queryparams = System.Web.HttpUtility.ParseQueryString(query);
-
-        var videoId = queryparams["v"];
-
-        return videoId;
-    }
-
-    void First()
-    {
-        lista.NodoActual = lista.PrimerNodo;
-        PlayVideo();
-    }
-
-    void Before()
-    {
-        lista.Anterior();
-        PlayVideo();
-    }
-
-    void Next()
-    {
-        lista.Siguiente();
-        PlayVideo();
-
-    }
-
-    void Last()
-    {
-        lista.NodoActual = lista.UltimoNodo;
-        PlayVideo();
-
-    }
-
-    void Save()
-    {
-        var nuevoNodo = new Nodo(YoutubeLink);
-
-        Mensaje = lista.AgregarNodoAlInicio(nuevoNodo);
-
-        PlayVideo();
-
-        YoutubeLink = string.Empty;
-    }
-    void DeleteFirst ()
-    {
-        Mensaje = lista.EliminarNodoInicio();
-        PlayVideo();
-    }
-   
-    string DatoX = string.Empty;
-    string NuevoVideo = string.Empty;
-
-    void InsertBeforeX()
-    {
-        if (string.IsNullOrEmpty(DatoX) || string.IsNullOrEmpty(NuevoVideo))
-        {
-            Mensaje = "Debe ingresar los datos correctamente.";
-            return;
-        }
-
-        var nuevoNodo = new Nodo(NuevoVideo);
-        Mensaje = lista.InsertAntesDeX(DatoX, nuevoNodo);
-        PlayVideo();
-    }
-
-
+    </ul>
 }
 
+@code {
+    private ListaEnlazadaSimple listaEnlazada = new ListaEnlazadaSimple();
+    private int valorNodo;
+    private int posicion;
+
+    private void AgregarAlInicio()
+    {
+        listaEnlazada.InsertarNodoAlInicio(valorNodo);
+        valorNodo = 0; // Resetear el valor del nodo después de agregarlo.
+    }
+
+    private void EliminarAntesDe()
+    {
+        try
+        {
+            listaEnlazada.EliminarNodoAntesDe(posicion);
+        }
+        catch (Exception ex)
+        {
+            JSRuntime.InvokeVoidAsync("alert", ex.Message);
+        }
+    }
+
+    private void EliminarDespuesDe()
+    {
+        try
+        {
+            listaEnlazada.EliminarNodoDespuesDe(posicion);
+        }
+        catch (Exception ex)
+        {
+            JSRuntime.InvokeVoidAsync("alert", ex.Message);
+        }
+    }
+}
