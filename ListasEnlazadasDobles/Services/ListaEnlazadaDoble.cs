@@ -29,5 +29,20 @@ namespace ListasEnlazadasDobles.Services
             return NodoActual;
         }
 
+        public string InsertarNodoAlFinal(Nodo nuevoNodo)
+        {
+            if (IsEmpty)
+            {
+                PrimerNodo = nuevoNodo;
+                UltimoNodo = nuevoNodo;
+            }
+            else
+            {
+                UltimoNodo.LigaSiguiente = nuevoNodo;
+                UltimoNodo = nuevoNodo;
+            }
+
+            return "Se ha Insertado el nodo al final";
+        }
     }
 }
