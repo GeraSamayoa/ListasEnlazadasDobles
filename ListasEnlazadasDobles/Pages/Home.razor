@@ -1,12 +1,22 @@
 ﻿@page "/"
 
+
 <PageTitle>ListaEnlazadaDoble</PageTitle>
 
-
+<input type="type" name="name" @bind="valor" />
+<button @onclick="InsertarAlInicio"></button>
 
 @code {
+    string? valor;
+    private string? Mensaje, mensajeError = null;
 
-
+    private void InsertarAlInicio()
+    {
+        if (!string.IsNullOrWhiteSpace(valor))
+        {
+            Mensaje =        
+        }
+    }
 }
 
 
