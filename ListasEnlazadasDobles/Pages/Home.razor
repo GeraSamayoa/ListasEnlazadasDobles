@@ -1,62 +1,51 @@
-﻿@page "/"
+﻿@page "/lista-enlazada"
 
 @using Listas.Services
-@inject IJSRuntime JSRuntime
 
 <h3>Gestión de Lista Enlazada Simple</h3>
 
-<div>
-    <label for="valorNodo">Valor del Nodo:</label>
-    <input type="number" id="valorNodo" @bind="valorNodo" />
-</div>
-
-<button @onclick="AgregarAlInicio">Agregar al Inicio</button>
-<button @onclick="EliminarAntesDe">Eliminar Antes De</button>
-<button @onclick="EliminarDespuesDe">Eliminar Después De</button>
-
-@if (listaEnlazada != null)
+@if (listaEstaVacia)
 {
-    <h4>Nodos en la Lista:</h4>
+    <p>La lista está actualmente vacía.</p>
+}
+else
+{
     <ul>
         @foreach (var nodo in listaEnlazada)
         {
-            <li>@nodo.Valor</li>
+            <li>Valor: @nodo.Valor</li>
         }
     </ul>
 }
 
-@code {
-    private ListaEnlazadaSimple listaEnlazada = new ListaEnlazadaSimple();
-    private int valorNodo;
-    private int posicion;
+<h4>Agregar un Nodo al Inicio</h4>
+<input type="number" @bind="valorNodo" />
+<button @onclick="AgregarNodo">Agregar</button>
 
-    private void AgregarAlInicio()
+<h4>Eliminar un Nodo</h4>
+<input type="number" @bind="posicionNodo" />
+<button @onclick="EliminarNodoAntes">Eliminar Antes</button>
+<button @onclick="EliminarNodoDespues">Eliminar Después</button>
+
+@code {
+    ListaEnlazadaSimple listaEnlazada = new ListaEnlazadaSimple();
+    int valorNodo;
+    int posicionNodo;
+    bool listaEstaVacia => listaEnlazada.EstaVacia();
+
+    void AgregarNodo()
     {
         listaEnlazada.InsertarNodoAlInicio(valorNodo);
-        valorNodo = 0; // Resetear el valor del nodo después de agregarlo.
     }
 
-    private void EliminarAntesDe()
+    void EliminarNodoAntes()
     {
-        try
-        {
-            listaEnlazada.EliminarNodoAntesDe(posicion);
-        }
-        catch (Exception ex)
-        {
-            JSRuntime.InvokeVoidAsync("alert", ex.Message);
-        }
+        // Aquí puedes llamar al método de tu clase con manejo de errores.
+        // Por ejemplo, puedes mostrar un mensaje si la posición es inválida.
     }
 
-    private void EliminarDespuesDe()
+    void EliminarNodoDespues()
     {
-        try
-        {
-            listaEnlazada.EliminarNodoDespuesDe(posicion);
-        }
-        catch (Exception ex)
-        {
-            JSRuntime.InvokeVoidAsync("alert", ex.Message);
-        }
+        // Similar al método anterior, con manejo de errores adecuado.
     }
 }
