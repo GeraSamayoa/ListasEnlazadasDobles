@@ -1,51 +1,104 @@
-﻿@page "/lista-enlazada"
+﻿@page "/"
 
-@using Listas.Services
+@using ListasEnlazadasDobles.Models
+@using ListasEnlazadasDobles.Services
+@* @inject ListaEnlazadaDoble listaEnlazadaDobleService *@
 
-<h3>Gestión de Lista Enlazada Simple</h3>
+<h3>Gestión de Lista Enlazada Doble</h3>
 
-@if (listaEstaVacia)
-{
-    <p>La lista está actualmente vacía.</p>
-}
-else
-{
+<div>
+    <label for="nuevoValor">Valor del nuevo nodo:</label>
+    <input type="text" @bind="nuevoValor" />
+    <button @onclick="InsertarAlInicio">Insertar al Inicio</button>
+    <input type="number" @bind="posicion" />
+</div>
+
+@* @if (listaEnlazadaDobleService.PrimerNodo != null) *@
+@* { *@
+    <div>
+        <button @onclick="MoverAnterior">Anterior</button>
+        <button @onclick="MoverSiguiente">Siguiente</button>
+        <button @onclick="EliminarAntes">Eliminar Antes</button>
+        <button @onclick="EliminarDespues">Eliminar Después</button>
+    </div>
+    <p>Nodo Actual: @nodoActualValor</p>
+    <p>Visualización de la Lista:</p>
     <ul>
-        @foreach (var nodo in listaEnlazada)
+        @foreach (var nodo in ObtenerNodos())
         {
-            <li>Valor: @nodo.Valor</li>
+            <li>@nodo.Informacion</li>
         }
     </ul>
-}
-
-<h4>Agregar un Nodo al Inicio</h4>
-<input type="number" @bind="valorNodo" />
-<button @onclick="AgregarNodo">Agregar</button>
-
-<h4>Eliminar un Nodo</h4>
-<input type="number" @bind="posicionNodo" />
-<button @onclick="EliminarNodoAntes">Eliminar Antes</button>
-<button @onclick="EliminarNodoDespues">Eliminar Después</button>
+@* } *@
 
 @code {
-    ListaEnlazadaSimple listaEnlazada = new ListaEnlazadaSimple();
-    int valorNodo;
-    int posicionNodo;
-    bool listaEstaVacia => listaEnlazada.EstaVacia();
+    private string nuevoValor;
+    private string nodoActualValor;
+    private int posicion;
+    public ListaEnlazadaDoble Lista { get; set; } = new();
 
-    void AgregarNodo()
+    private void InsertarAlInicio()
     {
-        listaEnlazada.InsertarNodoAlInicio(valorNodo);
+        var nuevoNodo = new Nodo  (nuevoValor) ;
+        Lista.InsertarNodoAlInicio(nuevoNodo);
+        nodoActualValor = nuevoValor;
+        nuevoValor = string.Empty;
+        //StateHasChanged();
     }
 
-    void EliminarNodoAntes()
+    private void MoverSiguiente()
     {
-        // Aquí puedes llamar al método de tu clase con manejo de errores.
-        // Por ejemplo, puedes mostrar un mensaje si la posición es inválida.
+        Lista.Siguiente();
+       // ActualizarNodoActual();
     }
 
-    void EliminarNodoDespues()
+    private void MoverAnterior()
     {
-        // Similar al método anterior, con manejo de errores adecuado.
+        Lista.Anterior();
+       // ActualizarNodoActual();
     }
-}
+
+    private void EliminarAntes()
+    {
+        //int posicion = ObtenerPosicionNodoActual();
+        Lista.EliminarNodoAntesDe(posicion);
+        //ActualizarNodoActual();
+    }
+
+    private void EliminarDespues()
+    {
+        //int posicion = ObtenerPosicionNodoActual();
+        Lista.EliminarNodoDespuesDe(posicion);
+        //ActualizarNodoActual();
+    }
+
+    // private void ActualizarNodoActual()
+    // {
+    //     nodoActualValor = listaEnlazadaDobleService.NodoActual?.Informacion;
+    //     StateHasChanged();
+    // }
+
+    private IEnumerable<Nodo> ObtenerNodos()
+    {
+        var nodos = new List<Nodo>();
+        var nodoActual = Lista.PrimerNodo;
+        while (nodoActual != null)
+        {
+            nodos.Add(nodoActual);
+            nodoActual = nodoActual.LigaSiguiente;
+        }
+        return nodos;
+    }
+
+//     private int ObtenerPosicionNodoActual()
+//     {
+//         int posicion = 1;
+//         var nodoActual = listaEnlazadaDobleService.PrimerNodo;
+//         while (nodoActual != listaEnlazadaDobleService.NodoActual && nodoActual != null)
+//         {
+//             posicion++;
+//             nodoActual = nodoActual.LigaSiguiente;
+//         }
+//         return posicion;
+//     }
+ }

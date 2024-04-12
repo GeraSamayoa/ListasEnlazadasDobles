@@ -1,134 +1,140 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using ListasEnlazadasDobles.Models;
+using System;
 
-namespace Listas.Services
+namespace ListasEnlazadasDobles.Services
 {
-    // Clase Nodo que representa cada elemento de la lista enlazada.
-    public class Nodo
+    public class ListaEnlazadaDoble
     {
-        public int Valor { get; set; }
-        public Nodo Siguiente { get; set; }
+        public Nodo? PrimerNodo { get; set; }
+        public Nodo? UltimoNodo { get; set; }
+        public Nodo? NodoActual { get; set; }
 
-        public Nodo(int valor)
-        {
-            Valor = valor;
-            Siguiente = null;
-        }
-    }
-
-    // Clase ListaEnlazadaSimple que gestiona la lista enlazada de nodos.
-    public class ListaEnlazadaSimple : IEnumerable<Nodo>
-    {
-        public Nodo PrimerNodo { get; private set; }
-        public Nodo UltimoNodo { get; private set; }
-
-        public ListaEnlazadaSimple()
+        public ListaEnlazadaDoble()
         {
             PrimerNodo = null;
             UltimoNodo = null;
+            NodoActual = null;
         }
 
-        // Verifica si la lista está vacía.
-        public bool EstaVacia() => PrimerNodo == null;
+        public bool IsEmpty => PrimerNodo == null;
 
-        // Inserta un nuevo nodo al inicio de la lista.
-        public void InsertarNodoAlInicio(int valor)
+        // Método para insertar un nodo al inicio de la lista
+        public void InsertarNodoAlInicio(Nodo nuevoNodo)
         {
-            Nodo nuevoNodo = new Nodo(valor);
-            if (EstaVacia())
+            if (nuevoNodo == null)
+            {
+                throw new ArgumentNullException(nameof(nuevoNodo), "El nodo a insertar no puede ser nulo.");
+            }
+
+            if (IsEmpty)
             {
                 PrimerNodo = nuevoNodo;
                 UltimoNodo = nuevoNodo;
             }
             else
             {
-                nuevoNodo.Siguiente = PrimerNodo;
+                nuevoNodo.LigaSiguiente = PrimerNodo;
+                PrimerNodo.LigaAnterior = nuevoNodo;
                 PrimerNodo = nuevoNodo;
             }
         }
 
-        // Solicita al usuario ingresar la posición y elimina el nodo antes de esa posición.
-        public void EliminarNodoAntesDe()
+        // Método para eliminar un nodo antes de una posición dada
+        public void EliminarNodoAntesDe(int posicion)
         {
-            Console.WriteLine("Ingrese la posición antes de la cual desea eliminar el nodo:");
-            if (!int.TryParse(Console.ReadLine(), out int posicion) || posicion <= 1)
+            if (IsEmpty)
             {
-                Console.WriteLine("Posición inválida. Debe ser un número entero mayor que 1.");
-                return;
+                throw new InvalidOperationException("No se puede eliminar un nodo de una lista vacía.");
+            }
+            if (posicion <= 1)
+            {
+                throw new ArgumentOutOfRangeException(nameof(posicion), "La posición debe ser mayor que 1.");
             }
 
-            if (EstaVacia())
+            Nodo nodoAnterior = PrimerNodo;
+            for (int i = 1; i < posicion && nodoAnterior.LigaSiguiente != null; i++)
             {
-                Console.WriteLine("La lista está vacía.");
-                return;
+                nodoAnterior = nodoAnterior.LigaSiguiente;
             }
 
-            Nodo nodoActual = PrimerNodo;
-            Nodo nodoAnteriorAlAnterior = null;
-
-            for (int i = 1; nodoActual != null && i < posicion - 1; i++)
+            if (nodoAnterior != null && nodoAnterior.LigaAnterior != null)
             {
-                nodoAnteriorAlAnterior = nodoActual;
-                nodoActual = nodoActual.Siguiente;
-            }
-
-            if (nodoAnteriorAlAnterior == null || nodoActual == null || nodoActual.Siguiente == null)
-            {
-                Console.WriteLine("No se encontró un nodo antes de la posición especificada.");
-                return;
-            }
-
-            nodoAnteriorAlAnterior.Siguiente = nodoActual.Siguiente;
-        }
-
-        // Solicita al usuario ingresar la posición y elimina el nodo después de esa posición.
-        public void EliminarNodoDespuesDe()
-        {
-            Console.WriteLine("Ingrese la posición después de la cual desea eliminar el nodo:");
-            if (!int.TryParse(Console.ReadLine(), out int posicion))
-            {
-                Console.WriteLine("Posición inválida. Debe ser un número entero.");
-                return;
-            }
-
-            if (EstaVacia())
-            {
-                Console.WriteLine("La lista está vacía.");
-                return;
-            }
-
-            Nodo nodoActual = PrimerNodo;
-
-            for (int i = 1; nodoActual != null && i < posicion; i++)
-            {
-                nodoActual = nodoActual.Siguiente;
-            }
-
-            if (nodoActual == null || nodoActual.Siguiente == null)
-            {
-                Console.WriteLine("No hay nodo después de la posición dada o la posición es mayor que el número de nodos.");
-                return;
-            }
-
-            nodoActual.Siguiente = nodoActual.Siguiente.Siguiente;
-        }
-
-        // Implementación del método GetEnumerator requerido por la interfaz IEnumerable.
-        public IEnumerator<Nodo> GetEnumerator()
-        {
-            Nodo nodoActual = PrimerNodo;
-            while (nodoActual != null)
-            {
-                yield return nodoActual;
-                nodoActual = nodoActual.Siguiente;
+                Nodo nodoAEliminar = nodoAnterior.LigaAnterior;
+                nodoAnterior.LigaAnterior = nodoAEliminar.LigaAnterior;
+                if (nodoAEliminar.LigaAnterior != null)
+                {
+                    nodoAEliminar.LigaAnterior.LigaSiguiente = nodoAnterior;
+                }
+                else
+                {
+                    PrimerNodo = nodoAnterior;
+                }
             }
         }
 
-        // Implementación requerida por la interfaz IEnumerable.
-        IEnumerator IEnumerable.GetEnumerator()
+        // Método para eliminar un nodo después de una posición dada
+        public void EliminarNodoDespuesDe(int posicion)
         {
-            return GetEnumerator();
+            if (IsEmpty)
+            {
+                throw new InvalidOperationException("No se puede eliminar un nodo de una lista vacía.");
+            }
+            if (posicion < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(posicion), "La posición no puede ser negativa.");
+            }
+
+            Nodo nodoAnterior = PrimerNodo;
+            for (int i = 1; i < posicion && nodoAnterior != null; i++)
+            {
+                nodoAnterior = nodoAnterior.LigaSiguiente;
+            }
+
+            if (nodoAnterior != null && nodoAnterior.LigaSiguiente != null)
+            {
+                Nodo nodoAEliminar = nodoAnterior.LigaSiguiente;
+                nodoAnterior.LigaSiguiente = nodoAEliminar.LigaSiguiente;
+                if (nodoAEliminar.LigaSiguiente != null)
+                {
+                    nodoAEliminar.LigaSiguiente.LigaAnterior = nodoAnterior;
+                }
+                else
+                {
+                    UltimoNodo = nodoAnterior;
+                }
+            }
+        }
+
+        // Método para moverse al siguiente nodo de la lista
+        public Nodo Siguiente()
+        {
+            if (IsEmpty)
+            {
+                throw new InvalidOperationException("No se puede mover al siguiente nodo en una lista vacía.");
+            }
+            if (NodoActual == null)
+            {
+                throw new InvalidOperationException("NodoActual no está establecido.");
+            }
+
+            NodoActual = NodoActual.LigaSiguiente ?? UltimoNodo;
+            return NodoActual;
+        }
+
+        // Método para moverse al nodo anterior de la lista
+        public Nodo Anterior()
+        {
+            if (IsEmpty)
+            {
+                throw new InvalidOperationException("No se puede mover al nodo anterior en una lista vacía.");
+            }
+            if (NodoActual == null)
+            {
+                throw new InvalidOperationException("NodoActual no está establecido.");
+            }
+
+            NodoActual = NodoActual.LigaAnterior ?? PrimerNodo;
+            return NodoActual;
         }
     }
 }
