@@ -1,100 +1,131 @@
-﻿using ListasEnlazadasDobles.Models;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 
-namespace ListasEnlazadasDobles.Services
+namespace Listas.Services
 {
-    public class ListaEnlazadaDoble
+    // Clase Nodo que representa cada elemento de la lista enlazada.
+    public class Nodo
     {
-        public Nodo? PrimerNodo { get; set; }
-        public Nodo? UltimoNodo { get; set; }
-        public Nodo? NodoActual { get; set; }
+        public int Valor { get; set; }
+        public Nodo? Siguiente { get; set; }
 
-        public ListaEnlazadaDoble()
+        public Nodo(int valor)
+        {
+            Valor = valor;
+            Siguiente = null;
+        }
+    }
+
+    // Clase ListaEnlazadaSimple que gestiona la lista enlazada de nodos.
+    public class ListaEnlazadaSimple : IEnumerable<Nodo>
+    {
+        public Nodo? PrimerNodo { get; private set; }
+        public Nodo? UltimoNodo { get; private set; }
+
+        public ListaEnlazadaSimple()
         {
             PrimerNodo = null;
             UltimoNodo = null;
-            NodoActual = null;
         }
 
-        public bool IsEmpty => PrimerNodo == null;
+        // Verifica si la lista está vacía.
+        public bool EstaVacia() => PrimerNodo == null;
 
-        // Métodos existentes...
-        // ...
-
-        // Método para insertar un nodo al inicio de la lista.
-        public string InsertarAlInicio(Nodo nuevoNodo)
+        // Inserta un nuevo nodo al inicio de la lista.
+        public void InsertarNodoAlInicio(int valor)
         {
-            try
+            Nodo nuevoNodo = new Nodo(valor);
+            if (EstaVacia())
             {
-                if (nuevoNodo == null)
-                {
-                    throw new ArgumentNullException(nameof(nuevoNodo), "El nodo proporcionado es nulo.");
-                }
-
-                if (IsEmpty)
-                {
-                    PrimerNodo = nuevoNodo;
-                    UltimoNodo = nuevoNodo;
-                }
-                else
-                {
-                    nuevoNodo.LigaSiguiente = PrimerNodo;
-                    PrimerNodo.LigaAnterior = nuevoNodo;
-                    PrimerNodo = nuevoNodo;
-                }
-
-                NodoActual = nuevoNodo;
-                return "Nodo insertado al inicio.";
+                PrimerNodo = nuevoNodo;
+                UltimoNodo = nuevoNodo;
             }
-            catch (Exception ex)
+            else
             {
-                // Log the exception details here as needed.
-                return $"Error al insertar al inicio: {ex.Message}";
+                nuevoNodo.Siguiente = PrimerNodo;
+                PrimerNodo = nuevoNodo;
             }
         }
 
-        // Método para eliminar un nodo antes de una posición específica.
-        public string EliminarAntesDePosicion(int posicion)
+        // Elimina el nodo que se encuentra antes de la posición especificada.
+        public void EliminarNodoAntesDe(int posicion)
         {
-            try
+            if (EstaVacia())
             {
-                if (posicion <= 1)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(posicion), "La posición debe ser mayor que 1.");
-                }
-
-                // Resto del código...
-
-                return "Nodo eliminado antes de la posición.";
+                throw new InvalidOperationException("No se puede eliminar un nodo de una lista vacía.");
             }
-            catch (Exception ex)
+
+            if (posicion <= 1)
             {
-                // Log the exception details here as needed.
-                return $"Error al eliminar antes de la posición: {ex.Message}";
+                throw new ArgumentOutOfRangeException(nameof(posicion), "No existe un nodo antes de la primera posición.");
             }
+
+            Nodo? nodoActual = PrimerNodo;
+            Nodo? nodoAnteriorAlAnterior = null;
+
+            // Iteramos hasta llegar al nodo anterior al que queremos eliminar.
+            for (int i = 1; nodoActual != null && i < posicion - 1; i++)
+            {
+                nodoAnteriorAlAnterior = nodoActual;
+                nodoActual = nodoActual.Siguiente;
+            }
+
+            if (nodoActual == null || nodoActual.Siguiente == null)
+            {
+                throw new ArgumentException("La posición es mayor que el número de nodos en la lista.");
+            }
+
+            // Eliminamos la referencia al nodo que queremos eliminar.
+            nodoAnteriorAlAnterior.Siguiente = nodoActual.Siguiente;
         }
 
-        // Método para eliminar un nodo después de una posición específica.
-        public string EliminarDespuesDePosicion(int posicion)
+        // Elimina el nodo que se encuentra después de la posición especificada.
+        public void EliminarNodoDespuesDe(int posicion)
         {
-            try
+            if (EstaVacia())
             {
-                if (posicion < 0)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(posicion), "La posición no puede ser negativa.");
-                }
-
-                // Resto del código...
-
-                return "Nodo eliminado después de la posición.";
+                throw new InvalidOperationException("No se puede eliminar un nodo de una lista vacía.");
             }
-            catch (Exception ex)
+
+            Nodo? nodoActual = PrimerNodo;
+
+            // Iteramos hasta llegar al nodo cuyo siguiente queremos eliminar.
+            for (int i = 1; nodoActual != null && i < posicion; i++)
             {
-                // Log the exception details here as needed.
-                return $"Error al eliminar después de la posición: {ex.Message}";
+                nodoActual = nodoActual.Siguiente;
+            }
+
+            if (nodoActual == null || nodoActual.Siguiente == null)
+            {
+                throw new ArgumentException("No hay nodo después de la posición dada o la posición es mayor que el número de nodos.");
+            }
+
+            // Si el nodo a eliminar es el último, actualizamos el puntero del último nodo.
+            if (nodoActual.Siguiente == UltimoNodo)
+            {
+                UltimoNodo = nodoActual;
+            }
+
+            // Eliminamos la referencia al nodo que queremos eliminar.
+            nodoActual.Siguiente = nodoActual.Siguiente.Siguiente;
+        }
+
+        // Implementación del método GetEnumerator requerido por la interfaz IEnumerable.
+        public IEnumerator<Nodo> GetEnumerator()
+        {
+            Nodo? nodoActual = PrimerNodo;
+            while (nodoActual != null)
+            {
+                yield return nodoActual;
+                nodoActual = nodoActual.Siguiente;
             }
         }
 
-        // Continuación de otros métodos existentes...
-        // ...
+        // Implementación explícita del método GetEnumerator no genérico.
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
     }
 }
