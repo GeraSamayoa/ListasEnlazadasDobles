@@ -1,12 +1,42 @@
 ﻿@page "/"
+@using ListasEnlazadasDobles.Models;
+@using ListasEnlazadasDobles.Services;
+<PageTitle>Home</PageTitle>
 
-<PageTitle>ListaEnlazadaDoble</PageTitle>
+<h3>Lista Doblemente Enlazada</h3>
 
+<input @bind="nuevoValor" placeholder="Valor del nodo" />
+<input @bind="posicion" type="number" placeholder="Posición" />
 
+<button @onclick="() => Lista.InsertarAlFinal(nuevoValor)">Insertar al Final</button>
+<button @onclick="() => Lista.InsertarAntesDe(nuevoValor, posicion)">Insertar Antes de Posición</button>
+<button @onclick="() => Lista.EliminarEn(posicion)">Eliminar en Posición</button>
 
-@code {
-
-
+@if (Lista.PrimerNodo != null)
+{
+    <ul>
+        @MostrarLista(Lista.PrimerNodo)
+    </ul>
+}
+else
+{
+    <p>La lista está vacía.</p>
 }
 
+@code {
+    public ListaEnlazadaDoble Lista { get; set; } = new();
+    private string nuevoValor;
+    private int posicion;
 
+    private RenderFragment MostrarLista(Nodo nodo) => builder =>
+    {
+        int seq = 0;
+        while (nodo != null)
+        {
+            builder.OpenElement(seq++, "li");
+            builder.AddContent(seq++, nodo.Informacion.ToString());
+            builder.CloseElement();
+            nodo = nodo.LigaSiguiente;
+        }
+    };
+}
