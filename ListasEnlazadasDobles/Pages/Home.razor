@@ -1,12 +1,248 @@
-﻿@page "/"
+﻿﻿
+@page "/"
+@using ListasEnlazadasDobles.Models
+@using ListasEnlazadasDobles.Services
 
 <PageTitle>ListaEnlazadaDoble</PageTitle>
 
 
+@* Reproductor *@
+
+<div class="d-flex justify-content-center mb-2">
+    <iframe src="@YoutubeId" width="800" height="400" frameborder="0" allowfullscreen></iframe>
+</div>
+
+
+@* botones *@
+
+<div class="d-flex justify-content-center mb-2">
+    <button @onclick="First" class="me-2 btn btn-primary">Primero</button>
+    <button @onclick="Before" class="me-2 btn btn-success">Anterior</button>
+    <button @onclick="Next" class="me-2 btn btn-danger">Siguiente</button>
+    <button @onclick="Last" class="me-2 btn btn-warning">Final</button>
+</div>
+
+
+@* para guardar *@
+
+<div class="row">
+    <input type="text" class="form-control mb-2" @bind-value="YoutubeLink" placeholder="Informacio" />
+    <input type="number" class="form-control mb-2" @bind-value="posicion" placeholder="posicion" />
+    <input type="text" class="form-control mb-2" @bind-value="datoX" placeholder="dato" />
+    <input type="text" class="form-control mb-2" @bind-value="DatoBuscado" placeholder="buscar" />
+
+    <button class="btn btn-success" @onclick="SaveFinal">Guardar al Final</button>
+    <button class="btn btn-primary" @onclick="SaveInicio">Guardar al Inicio</button>
+    <button class="btn btn-danger" @onclick="EliminaNodoAntesDePosicionX">Eliminar Nodo Antes de Posicion X</button>
+    <button class="btn btn-warning" @onclick="EliminaNodoDespuesDePosicionX">Eliminar Nodo Despues de Posicion X</button>
+    <button class="btn btn-info" @onclick="InsertarNodoAntesDePosicionX">Insertar Nodo Antes de Posicion X</button>
+    <button class="btn btn-secondary" @onclick="EliminarNodoEnPosicionX">Eliminar Nodo en Posicion X</button>
+    <button class="btn btn-dark" @onclick="InsertarDespuesDePosicionX">Insertar Despues de Posicion X</button>
+    <button class="btn btn-danger" @onclick="EliminarAlFinal">Eliminar al Final</button>
+    <button class="btn btn-warning" @onclick="EliminarAntesDeUnDatoX">Eliminar Antes de un Dato X</button>
+    <button class="btn btn-info" @onclick="EliminarNodoAlInicio">Eliminar Nodo al Inicio</button>
+    <button class="btn btn-secondary" @onclick="InsertarNodoAntesDeUnDatoX">Insertar Nodo Antes de un Dato X</button>
+    <button class="btn btn-dark" @onclick="InsertarPosicionX">Insertar en Posicion X</button>
+    <button class="btn btn-danger" @onclick="InsertarNodoDespuesDeUnDatoX">Insertar Nodo Despues de un Dato X</button>
+    <button class="btn btn-warning" @onclick="BuscarNodoPorDato">Buscar Nodo</button>
+    <button class="btn btn-info" @onclick="RecorrerListaRecursivamente">Recorrer Lista Recursivamente</button>
+
+
+
+
+</div>
+
+<p>@Mensaje</p>
+<p>@MensajeBuscar</p>
 
 @code {
+    ListaEnlazadaDoble lista;
+
+    string YoutubeLink = string.Empty;
+    string YoutubeId = string.Empty;
+    string Mensaje = string.Empty;
+    int posicion = 0;
+    string datoX = string.Empty;
+    string MensajeBuscar = string.Empty;
+    string DatoBuscado = string.Empty;
+
+    protected override void OnInitialized()
+    {
+        lista = new ListaEnlazadaDoble();
+    }
+
+    void PlayVideo()
+    {
+        if (lista.NodoActual is not null)
+        {
+            YoutubeLink = lista.NodoActual.Informacion;
+
+            var videoId = GetVideoId(YoutubeLink);
+
+            if (!string.IsNullOrEmpty(videoId))
+            {
+                YoutubeId = $"https://www.youtube.com/embed/{videoId}";
+            }
+
+        }
 
 
+    }
+
+    string GetVideoId(string link)
+    {
+        //creamos un objeto de tipo Uri
+        var uri = new Uri(link);
+
+        // obtenemos el query string del uri
+        var query = uri.Query;
+
+        // obtenemos todos los parametros del query string
+        var queryparams = System.Web.HttpUtility.ParseQueryString(query);
+
+        var videoId = queryparams["v"];
+
+        return videoId;
+    }
+
+    void First()
+    {
+        lista.NodoActual = lista.PrimerNodo;
+        PlayVideo();
+    }
+
+    void Before()
+    {
+        lista.Anterior();
+        PlayVideo();
+    }
+
+    void Next()
+    {
+        lista.Siguiente();
+        PlayVideo();
+
+    }
+
+    void Last()
+    {
+        lista.NodoActual = lista.UltimoNodo;
+        PlayVideo();
+
+    }
+
+    void SaveFinal()
+    {
+        var nuevoNodo = new Nodo(YoutubeLink);
+
+        Mensaje = lista.InsertarNodoAlFinal(nuevoNodo);
+
+        PlayVideo();
+
+        YoutubeLink = string.Empty;
+    }
+
+
+    void SaveInicio()
+    {
+        var nuevoNodo = new Nodo(YoutubeLink);
+
+        Mensaje = lista.InsertarNodoAlInicio(nuevoNodo);
+
+        PlayVideo();
+
+        YoutubeLink = string.Empty;
+    }
+
+    void EliminaNodoAntesDePosicionX()
+    {
+        Mensaje = lista.EliminarNodoAntesDe(posicion);
+        PlayVideo();
+    }
+
+    void EliminaNodoDespuesDePosicionX()
+    {
+        Mensaje = lista.EliminarNodoDespuesDe(posicion);
+        PlayVideo();
+    }
+
+    void InsertarNodoAntesDePosicionX()
+    {
+
+        Mensaje = lista.InsertarAntesDe(YoutubeLink, posicion);
+        PlayVideo();
+    }
+
+    void EliminarNodoEnPosicionX()
+    {
+        Mensaje = lista.EliminarEn(posicion);
+        PlayVideo();
+    }
+
+    void InsertarDespuesDePosicionX()
+    {
+        Mensaje = lista.InsertarDespuesDePosicionX(posicion, YoutubeLink);
+        PlayVideo();
+    }
+
+    void EliminarAlFinal()
+    {
+        Mensaje = lista.QuitarAlFinal();
+        PlayVideo();
+    }
+
+    void EliminarAntesDeUnDatoX()
+    {
+        Mensaje = lista.EliminarAntesDeX(YoutubeLink);
+        PlayVideo();
+    }
+
+    void EliminarNodoAlInicio()
+    {
+        Mensaje = lista.EliminarNodoInicio();
+        PlayVideo();
+    }
+
+    void InsertarNodoAntesDeUnDatoX()
+    {
+        var nuevoNodo = new Nodo(YoutubeLink);
+        Mensaje = lista.InsertarAntesDeUnDatoX(datoX, nuevoNodo);
+        PlayVideo();
+    }
+
+    void InsertarPosicionX()
+    {
+        Mensaje = lista.InsertarEnPosicion(posicion, YoutubeLink);
+        PlayVideo();
+    }
+
+    void InsertarNodoDespuesDeUnDatoX()
+    {
+        var nuevoNodo = new Nodo(YoutubeLink);
+        Mensaje = lista.InsertarDespuesDeUnDatoX(datoX, nuevoNodo);
+        PlayVideo();
+    }
+
+
+    void BuscarNodoPorDato()
+    {
+        var dato = DatoBuscado;
+        MensajeBuscar = lista.BuscarNodo(dato);
+        DatoBuscado = string.Empty;
+
+        PlayVideo();
+
+
+    }
+
+
+    private List<Nodo> nodosAux = new List<Nodo>();
+    void RecorrerListaRecursivamente()
+    {
+        nodosAux.Clear();
+        ListaEnlazadaDoble.RecorrerRecursivamente(lista.PrimerNodo, nodosAux);
+        Mensaje = string.Join("->", nodosAux.Select(x => x.Informacion));
+        PlayVideo();
+
+    }
 }
-
-
