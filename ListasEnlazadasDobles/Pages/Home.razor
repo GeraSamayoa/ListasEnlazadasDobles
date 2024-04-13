@@ -66,26 +66,27 @@
             <div class="carousel-inner">
                 @foreach (var nodo in nodosAux)
                 {
-                    <div class="carousel-item">
-                        <iframe src="@GetVideoId(nodo.Informacion)" width="800" height="400" frameborder="0" allowfullscreen></iframe>
-                        <div class="carousel-caption">
-                            <h3>@nodo.Nombre</h3>
+                    <div class="@nodo.Informacion">
+                        <div class="carousel-item-content">
+                            <img src="https://img.youtube.com/vi/@GetVideoId(nodo.Informacion)/0.jpg" alt="@nodo.Nombre" class="carousel-thumbnail" />
+                            <div class="carousel-caption">
+                                <h3>@nodo.Nombre</h3>
+                            </div>
                         </div>
                     </div>
                 }
             </div>
-            <div class="btnCarrules">
+            <div class="carousel-controls">
                 <a class="carousel-control-prev" href="#" role="button" @onclick="PrevSlide">
                     <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                    <span class="sr-only"></span>
+                    <span class="sr-only">Previous</span>
                 </a>
                 <a class="carousel-control-next" href="#" role="button" @onclick="NextSlide">
                     <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                    <span class="sr-only"></span>
+                    <span class="sr-only">Next</span>
                 </a>
             </div>
         </div>
-
     }
 
     @if (MensajeError != null)
@@ -99,6 +100,10 @@
         <div class="containerMessage">
             <p>@Mensaje</p>
         </div>
+    }
+    else
+    {
+        <div></div>
     }
 
     <footer class="footer-home">
@@ -122,7 +127,7 @@
                 </div>
                 <div class="eliminar-container">
                     <label class="subtitle-container">Eliminación de nodo</label>
-                    <button class="btn-txt eliminar " @onclick="EliminarNodoAlInicio">>Eliminar al inicio</button>
+                    <button class="btn-txt eliminar " @onclick="EliminarNodoAlInicio">Eliminar al inicio</button>
                     <button class="btn-txt eliminar " @onclick="EliminarAlFinal">Eliminar al final</button>
                     <button class="btn-txt eliminar " @onclick="EliminarAntesDeUnDatoX">Eliminar antes de un dato X</button>
                     <button class="btn-txt eliminar " @onclick="EliminarNodoPorContenido">Eliminar un dato X</button>
@@ -163,8 +168,8 @@
 
     string YoutubeLink = string.Empty;
     string YoutubeId = string.Empty;
-    string Mensaje = null;
-    string MensajeError = null;
+    string? Mensaje = null;
+    string? MensajeError = null;
     int? posicion = null;
     string datoX = string.Empty;
     string MensajeBuscar = string.Empty;
@@ -267,17 +272,19 @@
             return;
         };
 
-        MensajeError = string.Empty;
+        MensajeError = null;
         Mensaje = lista.InsertarNodoAlInicio(nuevoNodo);
 
         YoutubeLink = string.Empty;
         Nombre = string.Empty;
 
         PlayVideo();
+        YoutubeLink = string.Empty;
     }
 
     void EliminaNodoAntesDePosicionX()
     {
+        MensajeError = null;
         Mensaje = lista.EliminarNodoAntesDe(posicion ?? 0);
         (MensajeError, posicion) = MensajeValidator.MensajeEliminar(Mensaje, MensajeError, posicion);
         PlayVideo();
@@ -285,6 +292,7 @@
 
     void EliminaNodoDespuesDePosicionX()
     {
+        MensajeError = null;
         Mensaje = lista.EliminarNodoDespuesDe(posicion ?? 0);
         (MensajeError, posicion) = MensajeValidator.MensajeEliminar(Mensaje, MensajeError, posicion);
         PlayVideo();
@@ -292,7 +300,7 @@
 
     void InsertarNodoAntesDePosicionX()
     {
-
+        MensajeError = null;
         Mensaje = lista.InsertarAntesDe(YoutubeLink, Nombre, posicion ?? 0);
         (MensajeError, Nombre, posicion) = MensajeValidator.MensajeInsertar(Mensaje, MensajeError, posicion, Nombre);
 
@@ -302,6 +310,7 @@
 
     void EliminarNodoEnPosicionX()
     {
+        MensajeError = null;
         Mensaje = lista.EliminarEn(posicion ?? 0);
         (MensajeError, posicion) = MensajeValidator.MensajeEliminar(Mensaje, MensajeError, posicion);
         PlayVideo();
@@ -309,6 +318,7 @@
 
     void InsertarDespuesDePosicionX()
     {
+        MensajeError = null;
         Mensaje = lista.InsertarDespuesDePosicionX(posicion ?? 0, YoutubeLink, Nombre);
         (MensajeError, Nombre, posicion) = MensajeValidator.MensajeInsertar(Mensaje, MensajeError, posicion, Nombre);
 
@@ -318,6 +328,7 @@
 
     void EliminarAlFinal()
     {
+        MensajeError = null;
         Mensaje = lista.QuitarAlFinal();
         (MensajeError, posicion) = MensajeValidator.MensajeEliminar(Mensaje, MensajeError, posicion);
         PlayVideo();
@@ -325,6 +336,7 @@
 
     void EliminarAntesDeUnDatoX()
     {
+        MensajeError = null;
         Mensaje = lista.EliminarAntesDeX(datoX);
         (MensajeError, posicion) = MensajeValidator.MensajeEliminar(Mensaje, MensajeError, posicion);
         datoX = string.Empty;
@@ -334,6 +346,7 @@
 
     void EliminarNodoPorContenido()
     {
+        MensajeError = null;
         Mensaje = lista.EliminarNodoPorContenido(datoX);
         (MensajeError, posicion) = MensajeValidator.MensajeEliminar(Mensaje, MensajeError, posicion);
         datoX = string.Empty;
@@ -343,6 +356,7 @@
 
     void EliminarNodoDespuesDeContenido()
     {
+        MensajeError = null;
         Mensaje = lista.EliminarNodoDespuesDeContenido(datoX);
         (MensajeError, posicion) = MensajeValidator.MensajeEliminar(Mensaje, MensajeError, posicion);
         datoX = string.Empty;
@@ -352,6 +366,7 @@
 
     void EliminarNodoAlInicio()
     {
+        MensajeError = null;
         Mensaje = lista.EliminarNodoInicio();
         (MensajeError, posicion) = MensajeValidator.MensajeEliminar(Mensaje, MensajeError, posicion);
 
@@ -360,6 +375,7 @@
 
     void InsertarNodoAntesDeUnDatoX()
     {
+        MensajeError = null;
         var nuevoNodo = new Nodo(YoutubeLink, Nombre);
         Mensaje = lista.InsertarAntesDeUnDatoX(datoX, nuevoNodo);
 
@@ -372,6 +388,7 @@
 
     void InsertarPosicionX()
     {
+        MensajeError = null;
         Mensaje = lista.InsertarEnPosicion(posicion ?? 0, YoutubeLink, Nombre);
         (MensajeError, Nombre, posicion) = MensajeValidator.MensajeInsertar(Mensaje, MensajeError, posicion, Nombre);
 
@@ -381,6 +398,7 @@
 
     void InsertarNodoDespuesDeUnDatoX()
     {
+        MensajeError = null;
         var nuevoNodo = new Nodo(YoutubeLink, Nombre);
         Mensaje = lista.InsertarDespuesDeUnDatoX(datoX, nuevoNodo);
         (MensajeError, Nombre, posicion) = MensajeValidator.MensajeInsertar(Mensaje, MensajeError, posicion, Nombre);
@@ -393,6 +411,7 @@
 
     void BuscarNodoPorDato()
     {
+        MensajeError = null;
         var dato = DatoBuscado;
         var nodoEncontrado = lista.BuscarNodo(dato);
 
@@ -413,6 +432,7 @@
 
     void OrdenarLista()
     {
+        MensajeError = null;
         Mensaje = lista.OrdenarLista();
         MensajeError = MensajeValidator.MensajeOrdenar(Mensaje, MensajeError);
 
@@ -422,6 +442,7 @@
     private List<Nodo> nodosAux = new List<Nodo>();
     void RecorrerListaRecursivamente()
     {
+        MensajeError = null;
         nodosAux.Clear();
         ListaEnlazadaDoble.RecorrerRecursivamente(lista.PrimerNodo, nodosAux);
         // Mensaje = string.Join(" -> ", nodosAux.Select(n => $"{n.Informacion} - {n.Nombre}"));
