@@ -1,1 +1,487 @@
-﻿
+﻿﻿@page "/"
+@using ListasEnlazadasDobles.Models
+@using ListasEnlazadasDobles.Services
+@using ListasEnlazadasDobles.Validators
+
+<div >
+    <div class="navbar">
+        <Button Color="ButtonColor.Success" @onclick="() => OnShowOffcanvasClick(Placement.Start)">
+            <div class="menu" >
+                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-list" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5" />
+                </svg>
+            </div>
+        </Button>
+
+        <div class="search">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"  fill="currentColor" class="bi bi-search ml-1" viewBox="0 0 16 16">
+                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
+            </svg>
+            <input class="search-input" type="text" @bind-value="DatoBuscado" />
+            <button class="ml-1 search-input" @onclick="BuscarNodoPorDato">Buscar</button>
+        </div>
+    </div>
+    @if (lista.IsEmpty)
+    {
+        <div class="NotFound">
+            <h1 class="NotFound-title">No contamos con datos.</h1>
+            <p class="NotFound-parrafo">Ingrese datos para activar el reproductor</p>
+            <img class="NotFound-img" src="./OBJECTS.svg" alt="Texto alternativo" />
+        </div>
+
+    }
+    else
+    {
+        <div class="d-flex justify-content-center align-items-center mb-2">
+            <button @onclick="First" class="btnVideo">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-arrow-bar-left" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M12.5 15a.5.5 0 0 1-.5-.5v-13a.5.5 0 0 1 1 0v13a.5.5 0 0 1-.5.5M10 8a.5.5 0 0 1-.5.5H3.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L3.707 7.5H9.5a.5.5 0 0 1 .5.5" />
+                </svg>
+            </button>
+            <button @onclick="Before" class="btnVideo">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left-short" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M12 8a.5.5 0 0 1-.5.5H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H11.5a.5.5 0 0 1 .5.5" />
+                </svg>
+            </button>
+
+            <div class="d-flex justify-content-center mb-2">
+                <iframe src="@YoutubeId" width="800" height="400" frameborder="0" allowfullscreen></iframe>
+            </div>
+            <button @onclick="Next" class="btnVideo">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-right-short" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M4 8a.5.5 0 0 1 .5-.5h5.793L8.146 5.354a.5.5 0 1 1 .708-.708l3 3a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708-.708L10.293 8.5H4.5A.5.5 0 0 1 4 8" />
+                </svg>
+            </button>
+            <button @onclick="Last" class="btnVideo">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-bar-right" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M6 8a.5.5 0 0 0 .5.5h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L12.293 7.5H6.5A.5.5 0 0 0 6 8m-2.5 7a.5.5 0 0 1-.5-.5v-13a.5.5 0 0 1 1 0v13a.5.5 0 0 1-.5.5" />
+                </svg>
+            </button>
+        </div>
+        <div class="botonesExtra">
+            <button class="extra" @onclick="RecorrerListaRecursivamente">Recorrido recursivo</button>
+            <button class="extra" @onclick="OrdenarLista">Ordenamiento</button>
+        </div>
+        <div class="carousel">
+    <div class="carousel-inner d-flex flex-row">
+        @foreach (var nodo in nodosAux)
+        {
+            <div class="@nodo.Informacion">
+                <div class="carousel-item-content">
+                    <img src="https://img.youtube.com/vi/@GetVideoId(nodo.Informacion)/0.jpg" alt="@nodo.Nombre" class="carousel-thumbnail" />
+                    <div class="carousel-caption">
+                        <h3>@nodo.Nombre</h3>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+    <div class="carousel-controls">
+        <a class="carousel-control-prev" href="#" role="button" @onclick="PrevSlide">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="sr-only">Previous</span>
+        </a>
+        <a class="carousel-control-next" href="#" role="button" @onclick="NextSlide">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="sr-only">Next</span>
+        </a>
+    </div>
+</div>
+    }
+
+    @if (MensajeError != null)
+    {
+        <div class="containerMessageError">
+            <p>@MensajeError</p>
+        </div>
+    }
+    else if (Mensaje != null)
+    {
+        <div class="containerMessage">
+            <p>@Mensaje</p>
+        </div>
+    }
+    else
+    {
+        <div></div>
+    }
+
+
+    <footer class="footer-home">
+        <h2 class="logo">StreamSync</h2>
+    </footer>
+</div>
+
+<Offcanvas Class="bg-success" @ref="offcanvas" Title="Administracion de Nodos" Placement="@placement" Size="OffcanvasSize.Large">
+    <BodyTemplate >
+        <div class="row">
+            <div class="left-container col-6">
+                <div class="insertar-container">
+                    <label class="subtitle-container">Inserción de nodo</label>
+                    <button class="btn-txt insertar " @onclick="SaveInicio">Insertar al inicio</button>
+                    <button class="btn-txt insertar " @onclick="SaveFinal">Insertar al final</button>
+                    <button class="btn-txt insertar " @onclick="InsertarNodoAntesDeUnDatoX">Insertar antes de un dato X</button>
+                    <button class="btn-txt insertar " @onclick="InsertarNodoDespuesDeUnDatoX">Insertar despues de un dato X</button>
+                    <button class="btn-txt insertar " @onclick="InsertarNodoAntesDePosicionX">Insertar antes de una posición X</button>
+                    <button class="btn-txt insertar " @onclick="InsertarPosicionX">Insertar en una posición X</button>
+                    <button class="btn-txt insertar " @onclick="InsertarDespuesDePosicionX">Insertar despues de una posición X</button>
+                </div>
+                <div class="eliminar-container">
+                    <label class="subtitle-container">Eliminación de nodo</label>
+                    <button class="btn-txt eliminar " @onclick="EliminarNodoAlInicio">Eliminar al inicio</button>
+                    <button class="btn-txt eliminar " @onclick="EliminarAlFinal">Eliminar al final</button>
+                    <button class="btn-txt eliminar " @onclick="EliminarAntesDeUnDatoX">Eliminar antes de un dato X</button>
+                    <button class="btn-txt eliminar " @onclick="EliminarNodoPorContenido">Eliminar un dato X</button>
+                    <button class="btn-txt eliminar " @onclick="EliminarAntesDeUnDatoX">Eliminar antes de un dato X</button>
+                    <button class="btn-txt eliminar " @onclick="EliminaNodoAntesDePosicionX">Eliminar antes de una posición X</button>
+                    <button class="btn-txt eliminar " @onclick="EliminarNodoDespuesDeContenido">Eliminar en una posición X</button>
+                    <button class="btn-txt eliminar " @onclick="EliminaNodoDespuesDePosicionX">Eliminar despues de una posición X</button>
+                </div>
+            </div>
+            <div class="col-4 d-flex justify-content-center align-items-center flex-column">
+                <label class="subtitle-container align-self-start">Ingrese el nombre del video:</label>
+                <input type="text" class="form-control mb-2" @bind-value="Nombre" placeholder="Titulo de video" />
+                <label class="subtitle-container align-self-start">Ingrese el link del video:</label>
+                <input type="text" class="form-control mb-2 align-self-start" @bind-value="YoutubeLink" placeholder="Ingrese el link del video" />
+                <label class="subtitle-container align-self-start">Ingrese la posición deseada:</label>
+                <input type="number" class="form-control mb-2" @bind-value="posicion" placeholder="Posición deseada" />
+                <label class="subtitle-container align-self-start">Ingrese un dato X:</label>
+                <input type="text" class="form-control mb-2" @bind-value="datoX" placeholder="Dato deseado" />
+            </div>
+        </div>
+    </BodyTemplate>
+</Offcanvas>
+
+
+@code{
+
+    private Offcanvas offcanvas = default!;
+    private Placement placement;
+
+    private async Task OnShowOffcanvasClick(Placement placement)
+    {
+        this.placement = placement;
+        await offcanvas.ShowAsync();
+    }
+
+
+    ListaEnlazadaDoble lista;
+
+    string YoutubeLink = string.Empty;
+    string YoutubeId = string.Empty;
+    string? Mensaje = null;
+    string? MensajeError = null;
+    int? posicion = null;
+    string datoX = string.Empty;
+    string MensajeBuscar = string.Empty;
+    string DatoBuscado = string.Empty;
+    string Nombre = string.Empty;
+
+    protected override void OnInitialized()
+    {
+        lista = new ListaEnlazadaDoble();
+    }
+
+    void PlayVideo()
+    {
+        if (lista.NodoActual is not null)
+        {
+            YoutubeLink = lista.NodoActual.Informacion;
+
+            var videoId = GetVideoId(YoutubeLink);
+
+            if (!string.IsNullOrEmpty(videoId))
+            {
+                YoutubeId = $"https://www.youtube.com/embed/{videoId}";
+            }
+
+        }
+
+
+    }
+
+    string GetVideoId(string link)
+    {
+        //creamos un objeto de tipo Uri
+        var uri = new Uri(link);
+
+        // obtenemos el query string del uri
+        var query = uri.Query;
+
+        // obtenemos todos los parametros del query string
+        var queryparams = System.Web.HttpUtility.ParseQueryString(query);
+
+        var videoId = queryparams["v"];
+
+        return videoId;
+    }
+
+    void First()
+    {
+        lista.NodoActual = lista.PrimerNodo;
+        PlayVideo();
+
+    }
+
+    void Before()
+    {
+        lista.Anterior();
+        PlayVideo();
+    }
+
+    void Next()
+    {
+        lista.Siguiente();
+        PlayVideo();
+
+    }
+
+    void Last()
+    {
+        lista.NodoActual = lista.UltimoNodo;
+        PlayVideo();
+
+    }
+
+    void SaveFinal()
+    {
+        var nuevoNodo = new Nodo(YoutubeLink, Nombre);
+
+        if (string.IsNullOrEmpty(YoutubeLink) || string.IsNullOrEmpty(Nombre))
+        {
+            MensajeError = "El campo Informacion y Nombre son requeridos";
+            return;
+        };
+
+        MensajeError = null;
+        Mensaje = lista.InsertarNodoAlFinal(nuevoNodo);
+
+        YoutubeLink = string.Empty;
+        Nombre = string.Empty;
+
+        PlayVideo();
+    }
+
+
+    void SaveInicio()
+    {
+        var nuevoNodo = new Nodo(YoutubeLink, Nombre);
+
+        if (string.IsNullOrEmpty(YoutubeLink) || string.IsNullOrEmpty(Nombre))
+        {
+            MensajeError = "El campo Informacion y Nombre son requeridos";
+            return;
+        };
+
+        MensajeError = null;
+        Mensaje = lista.InsertarNodoAlInicio(nuevoNodo);
+
+        YoutubeLink = string.Empty;
+        Nombre = string.Empty;
+
+        PlayVideo();
+        YoutubeLink = string.Empty;
+    }
+
+    void EliminaNodoAntesDePosicionX()
+    {
+        MensajeError = null;
+        Mensaje = lista.EliminarNodoAntesDe(posicion ?? 0);
+        (MensajeError, posicion) = MensajeValidator.MensajeEliminar(Mensaje, MensajeError, posicion);
+        PlayVideo();
+    }
+
+    void EliminaNodoDespuesDePosicionX()
+    {
+        MensajeError = null;
+        Mensaje = lista.EliminarNodoDespuesDe(posicion ?? 0);
+        (MensajeError, posicion) = MensajeValidator.MensajeEliminar(Mensaje, MensajeError, posicion);
+        PlayVideo();
+    }
+
+    void InsertarNodoAntesDePosicionX()
+    {
+        MensajeError = null;
+        Mensaje = lista.InsertarAntesDe(YoutubeLink, Nombre, posicion ?? 0);
+        (MensajeError, Nombre, posicion) = MensajeValidator.MensajeInsertar(Mensaje, MensajeError, posicion, Nombre);
+
+        YoutubeLink = string.Empty;
+        PlayVideo();
+    }
+
+    void EliminarNodoEnPosicionX()
+    {
+        MensajeError = null;
+        Mensaje = lista.EliminarEn(posicion ?? 0);
+        (MensajeError, posicion) = MensajeValidator.MensajeEliminar(Mensaje, MensajeError, posicion);
+        PlayVideo();
+    }
+
+    void InsertarDespuesDePosicionX()
+    {
+        MensajeError = null;
+        Mensaje = lista.InsertarDespuesDePosicionX(posicion ?? 0, YoutubeLink, Nombre);
+        (MensajeError, Nombre, posicion) = MensajeValidator.MensajeInsertar(Mensaje, MensajeError, posicion, Nombre);
+
+        YoutubeLink = string.Empty;
+        PlayVideo();
+    }
+
+    void EliminarAlFinal()
+    {
+        MensajeError = null;
+        Mensaje = lista.QuitarAlFinal();
+        (MensajeError, posicion) = MensajeValidator.MensajeEliminar(Mensaje, MensajeError, posicion);
+        PlayVideo();
+    }
+
+    void EliminarAntesDeUnDatoX()
+    {
+        MensajeError = null;
+        Mensaje = lista.EliminarAntesDeX(datoX);
+        (MensajeError, posicion) = MensajeValidator.MensajeEliminar(Mensaje, MensajeError, posicion);
+        datoX = string.Empty;
+
+        PlayVideo();
+    }
+
+    void EliminarNodoPorContenido()
+    {
+        MensajeError = null;
+        Mensaje = lista.EliminarNodoPorContenido(datoX);
+        (MensajeError, posicion) = MensajeValidator.MensajeEliminar(Mensaje, MensajeError, posicion);
+        datoX = string.Empty;
+
+        PlayVideo();
+    }
+
+    void EliminarNodoDespuesDeContenido()
+    {
+        MensajeError = null;
+        Mensaje = lista.EliminarNodoDespuesDeContenido(datoX);
+        (MensajeError, posicion) = MensajeValidator.MensajeEliminar(Mensaje, MensajeError, posicion);
+        datoX = string.Empty;
+
+        PlayVideo();
+    }
+
+    void EliminarNodoAlInicio()
+    {
+        MensajeError = null;
+        Mensaje = lista.EliminarNodoInicio();
+        (MensajeError, posicion) = MensajeValidator.MensajeEliminar(Mensaje, MensajeError, posicion);
+
+        PlayVideo();
+    }
+
+    void InsertarNodoAntesDeUnDatoX()
+    {
+        MensajeError = null;
+        var nuevoNodo = new Nodo(YoutubeLink, Nombre);
+        Mensaje = lista.InsertarAntesDeUnDatoX(datoX, nuevoNodo);
+
+        (MensajeError, Nombre, posicion) = MensajeValidator.MensajeInsertar(Mensaje, MensajeError, posicion, Nombre);
+        datoX = string.Empty;
+        YoutubeLink = string.Empty;
+
+        PlayVideo();
+    }
+
+    void InsertarPosicionX()
+    {
+        MensajeError = null;
+        Mensaje = lista.InsertarEnPosicion(posicion ?? 0, YoutubeLink, Nombre);
+        (MensajeError, Nombre, posicion) = MensajeValidator.MensajeInsertar(Mensaje, MensajeError, posicion, Nombre);
+
+        YoutubeLink = string.Empty;
+        PlayVideo();
+    }
+
+    void InsertarNodoDespuesDeUnDatoX()
+    {
+        MensajeError = null;
+        var nuevoNodo = new Nodo(YoutubeLink, Nombre);
+        Mensaje = lista.InsertarDespuesDeUnDatoX(datoX, nuevoNodo);
+        (MensajeError, Nombre, posicion) = MensajeValidator.MensajeInsertar(Mensaje, MensajeError, posicion, Nombre);
+
+        datoX = string.Empty;
+        YoutubeLink = string.Empty;
+        PlayVideo();
+    }
+
+
+    void BuscarNodoPorDato()
+    {
+        MensajeError = null;
+        var dato = DatoBuscado;
+        var nodoEncontrado = lista.BuscarNodo(dato);
+
+        if (nodoEncontrado != null)
+        {
+            lista.NodoActual = nodoEncontrado;
+            MensajeError = null;
+            Mensaje = $"Nodo encontrado: {nodoEncontrado.Nombre} en posición {lista.ObtenerPosicionNodo(nodoEncontrado)}";
+        }
+        else
+        {
+            MensajeError = $"Dato {dato} no encontrado";
+        }
+
+        DatoBuscado = string.Empty;
+        PlayVideo();
+    }
+
+    void OrdenarLista()
+    {
+        MensajeError = null;
+        Mensaje = lista.OrdenarLista();
+        MensajeError = MensajeValidator.MensajeOrdenar(Mensaje, MensajeError);
+
+    }
+
+
+    private List<Nodo> nodosAux = new List<Nodo>();
+    void RecorrerListaRecursivamente()
+    {
+        MensajeError = null;
+        nodosAux.Clear();
+        ListaEnlazadaDoble.RecorrerRecursivamente(lista.PrimerNodo, nodosAux);
+        // Mensaje = string.Join(" -> ", nodosAux.Select(n => $"{n.Informacion} - {n.Nombre}"));
+
+        PlayVideo();
+
+    }
+
+    private int currentSlide = 0;
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            currentSlide = 0;
+            ActivateSlide(currentSlide);
+        }
+    }
+
+    private void ActivateSlide(int index)
+    {
+        currentSlide = index;
+        var carouselItems = nodosAux.Select((_, i) => i == index ? "carousel-item active" : "carousel-item");
+        for (int i = 0; i < nodosAux.Count; i++)
+        {
+            nodosAux[i].Informacion = carouselItems.ElementAt(i);
+        }
+    }
+
+    private void PrevSlide()
+    {
+        currentSlide = (currentSlide - 1 + nodosAux.Count) % nodosAux.Count;
+        ActivateSlide(currentSlide);
+    }
+
+    private void NextSlide()
+    {
+        currentSlide = (currentSlide + 1) % nodosAux.Count;
+        ActivateSlide(currentSlide);
+    }
+}
