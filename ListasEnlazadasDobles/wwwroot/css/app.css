@@ -4,7 +4,12 @@ html, body {
     color: #FFF;
 }
 
-.navbar{
+#Contenedor-Html {
+    background: #242625;
+    color: #FFF;
+}
+
+.navbar {
     display: flex;
     justify-content: space-between;
 }
@@ -24,6 +29,7 @@ html, body {
     background: #35403A;
     border:none;
     width: 100%;
+    color: white;
 }
 
 .NotFound {
@@ -38,7 +44,7 @@ html, body {
     font-weight: 900;
     line-height: normal;
     align-self: flex-start;
-    margin-left: 10rem;
+    margin-left: 8rem;
     z-index: 999;
 }
 
@@ -48,7 +54,7 @@ html, body {
     font-style: normal;
     font-weight: 300;
     line-height: normal;
-    margin-left: 10rem;
+    margin-left: 8rem;
 }
 
 .NotFound-img {
@@ -59,6 +65,52 @@ html, body {
     left: 23%; 
     z-index: 0; 
 }
+
+.modal {
+    background: #4C594F;
+}
+
+.left-container, .insertar-container,
+.eliminar-container, .extra-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.subtitle-container {
+    color: whitesmoke;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 300;
+}
+
+.btn-txt {
+    border: none;
+    text-align: left;
+    color: #FFF;
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    padding-left: .7rem;
+    background-color: #198754;
+    margin: .05rem;
+}
+
+.insertar:hover {
+    border-radius: 5px;
+    background-color: #3f6c0d;
+}
+
+.eliminar:hover {
+    border-radius: 5px;
+    background-color: #145325;
+}
+
+.extra:hover {
+    border-radius: 5px;
+    background-color: #0a8e25;
+}
+
 
 .footer-home {
     margin-top: 35%;

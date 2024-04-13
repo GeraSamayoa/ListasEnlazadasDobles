@@ -1,15 +1,16 @@
 ﻿@page "/"
-@using BlazorBootstrap;
 @using ListasEnlazadasDobles.Models
 @using ListasEnlazadasDobles.Services
 
-<div>
+<div >
     <div class="navbar">
-        <div class="menu" >
-            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-list" viewBox="0 0 16 16">
-                <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5" />
-            </svg>
-        </div>
+        <Button Color="ButtonColor.Success" @onclick="() => OnShowOffcanvasClick(Placement.Start)">
+            <div class="menu" >
+                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-list" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5" />
+                </svg>
+            </div>
+        </Button>
 
         <div class="search">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"  fill="currentColor" class="bi bi-search ml-1" viewBox="0 0 16 16">
@@ -23,14 +24,57 @@
         <p class="NotFound-parrafo">Ingrese datos para activar el reproductor</p>
         <img class="NotFound-img" src="./OBJECTS.svg" alt="Texto alternativo" />
     </div>
-    <Button Color="ButtonColor.Primary" @onclick="() => OnShowOffcanvasClick(Placement.Start)">Show left offcanvas</Button>
+
     <footer class="footer-home">
         <h2 class="logo">StreamSync</h2>
     </footer>
 </div>
 
-<Offcanvas @ref="offcanvas" Title="Offcanvas bottom" Placement="@placement">
-    <BodyTemplate>...</BodyTemplate>
+<Offcanvas Class="bg-success" @ref="offcanvas" Title="Administracion de Nodos" Placement="@placement" Size="OffcanvasSize.Large">
+    <BodyTemplate >
+        <div class="row">
+            <div class="left-container col-6">
+                <div class="insertar-container">
+                    <label class="subtitle-container">Inserción de nodo</label>
+                    <button class="btn-txt insertar ">Insertar al inicio</button>
+                    <button class="btn-txt insertar ">Insertar al final</button>
+                    <button class="btn-txt insertar ">Insertar antes de un dato X</button>
+                    <button class="btn-txt insertar ">Insertar despues de un dato X</button>
+                    <button class="btn-txt insertar ">Insertar antes de una posición X</button>
+                    <button class="btn-txt insertar ">Insertar en una posición X</button>
+                    <button class="btn-txt insertar ">Insertar despues de una posición X</button>
+                </div>
+                <div class="eliminar-container">
+                    <label class="subtitle-container">Eliminación de nodo</label>
+                    <button class="btn-txt eliminar ">Eliminar al inicio</button>
+                    <button class="btn-txt eliminar ">Eliminar al final</button>
+                    <button class="btn-txt eliminar ">Eliminar antes de un dato X</button>
+                    <button class="btn-txt eliminar ">Eliminar un dato X</button>
+                    <button class="btn-txt eliminar ">Eliminar antes de un dato X</button>
+                    <button class="btn-txt eliminar ">Eliminar antes de una posición X</button>
+                    <button class="btn-txt eliminar ">Eliminar en una posición X</button>
+                    <button class="btn-txt eliminar ">Eliminar despues de una posición X</button>
+                </div>
+                <div class="extra-container">
+                    <label class="subtitle-container">Funciones extras</label>
+                    <button class="btn-txt extra">Recorrido recursivo</button>
+                    <button class="btn-txt extra">Ordenamiento</button>
+                </div>
+            </div>
+            <div class="col-4">
+                <input type="type" name="name" value="" />
+                <input type="type" name="name" value="" />
+                <input type="type" name="name" value="" />
+                <input type="type" name="name" value="" />
+                <div>
+
+                    <button>
+
+                    </button>
+                </div>
+            </div>
+        </div>
+    </BodyTemplate>
 </Offcanvas>
 
 
