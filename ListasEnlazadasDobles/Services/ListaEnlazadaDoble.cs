@@ -632,29 +632,47 @@ namespace ListasEnlazadasDobles.Services
             }
         }
 
-        // Metodo para ordenar la lista 
+
+        // Metodo para ordenar la lista en orden alfabético
         public string OrdenarLista()
         {
             if (IsEmpty)
             {
-                return "La lista está vacía, no se puede ordenar.";
+                return "La lista esta vacia";
             }
 
-            List<Nodo> nodos = new List<Nodo>();
-            RecorrerRecursivamente(PrimerNodo, nodos);
+            Nodo nodoActual = PrimerNodo;
+            Nodo nodoSiguiente = null;
+            string tempNombre;
+            string tempInformacion;
 
-            nodos.Sort((nodo1, nodo2) => nodo1.Nombre.CompareTo(nodo2.Nombre));
-
-            PrimerNodo = nodos[0];
-            UltimoNodo = nodos[nodos.Count - 1];
-
-            for (int i = 0; i < nodos.Count - 1; i++)
+            while (nodoActual != null)
             {
-                nodos[i].LigaSiguiente = nodos[i + 1];
-                nodos[i + 1].LigaAnterior = nodos[i];
+                nodoSiguiente = nodoActual.LigaSiguiente;
+
+                while (nodoSiguiente != null)
+                {
+                    if (string.Compare(nodoActual.Nombre, nodoSiguiente.Nombre) > 0)
+                    {
+                        tempNombre = nodoActual.Nombre;
+                        tempInformacion = nodoActual.Informacion;
+
+                        nodoActual.Nombre = nodoSiguiente.Nombre;
+                        nodoActual.Informacion = nodoSiguiente.Informacion;
+
+                        nodoSiguiente.Nombre = tempNombre;
+                        nodoSiguiente.Informacion = tempInformacion;
+                    }
+
+                    nodoSiguiente = nodoSiguiente.LigaSiguiente;
+                }
+
+                nodoActual = nodoActual.LigaSiguiente;
             }
 
-            return "¡Lista ordenada alfabéticamente!";
+            return "Lista ordenada correctamente";
         }
+
+
     }
 }

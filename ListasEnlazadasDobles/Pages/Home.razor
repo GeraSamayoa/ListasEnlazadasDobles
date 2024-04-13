@@ -46,9 +46,24 @@
     <button class="btn btn-dark" @onclick="InsertarPosicionX">Insertar en Posicion X</button>
     <button class="btn btn-danger" @onclick="InsertarNodoDespuesDeUnDatoX">Insertar Nodo Despues de un Dato X</button>
     <button class="btn btn-warning" @onclick="BuscarNodoPorDato">Buscar Nodo</button>
+    <button class="btn btn-info" @onclick="OrdenarLista">Ordenar Lista</button>
     <button class="btn btn-info" @onclick="RecorrerListaRecursivamente">Recorrer Lista Recursivamente</button>
 
 
+
+    @{
+        var contador = 1;
+    }
+
+    @foreach (var nodo in nodosAux)
+    {
+        <tr>
+            <th scope="row">@(contador++)</th>
+            <td>@nodo.Nombre | @nodo.Informacion</td>
+
+            
+        </tr>
+    }
 
 
 </div>
@@ -61,7 +76,8 @@
 
     string YoutubeLink = string.Empty;
     string YoutubeId = string.Empty;
-    string Mensaje = string.Empty;
+    string Mensaje = null;
+    string MensajeError = null;
     int posicion = 0;
     string datoX = string.Empty;
     string MensajeBuscar = string.Empty;
@@ -111,6 +127,7 @@
     {
         lista.NodoActual = lista.PrimerNodo;
         PlayVideo();
+
     }
 
     void Before()
@@ -137,12 +154,19 @@
     {
         var nuevoNodo = new Nodo(YoutubeLink, Nombre);
 
+        if (string.IsNullOrEmpty(YoutubeLink) || string.IsNullOrEmpty(Nombre))
+        {
+            MensajeError = "El campo Informacion y Nombre son requeridos";
+            return;
+        });
+        
+        MensajeError = string.Empty;
         Mensaje = lista.InsertarNodoAlFinal(nuevoNodo);
-
-        PlayVideo();
 
         YoutubeLink = string.Empty;
         Nombre = string.Empty;
+
+        PlayVideo();
     }
 
 
@@ -233,10 +257,17 @@
         var dato = DatoBuscado;
         MensajeBuscar = lista.BuscarNodo(dato);
         DatoBuscado = string.Empty;
+        //YoutubeLink = lista.BuscarNodo(dato);
 
         PlayVideo();
 
 
+    }
+
+    void OrdenarLista()
+    {
+        Mensaje = lista.OrdenarLista();
+        
     }
 
 
@@ -245,7 +276,7 @@
     {
         nodosAux.Clear();
         ListaEnlazadaDoble.RecorrerRecursivamente(lista.PrimerNodo, nodosAux);
-        Mensaje = string.Join(" -> ", nodosAux.Select(n => $"{n.Informacion} - {n.Nombre}"));
+        // Mensaje = string.Join(" -> ", nodosAux.Select(n => $"{n.Informacion} - {n.Nombre}"));
 
         PlayVideo();
 
