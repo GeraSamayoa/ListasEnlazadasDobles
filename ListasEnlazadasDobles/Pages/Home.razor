@@ -1,41 +1,38 @@
 ﻿@page "/"
+@using BlazorBootstrap;
 @using ListasEnlazadasDobles.Models
 @using ListasEnlazadasDobles.Services
 
-<PageTitle>REPRODUCTOR DE VIDEO</PageTitle>
+<div>
+    <div class="navbar">
+        <div class="menu" >
+            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-list" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5" />
+            </svg>
+        </div>
 
-@* Reproductor *@
-<div class="d-flex justify-content-center mb-4">
-    <!-- Agregado mb-4 -->
-    <iframe src="@YoutubeId" width="800" height="400" frameborder="0" allowfullscreen></iframe>
+        <div class="search">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"  fill="currentColor" class="bi bi-search ml-1" viewBox="0 0 16 16">
+                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
+            </svg>
+            <input class="search-input" type="text"/>
+        </div>
+    </div>
+    <div class="NotFound">
+        <h1 class="NotFound-title">No contamos con datos.</h1>
+        <p class="NotFound-parrafo">Ingrese datos para activar el reproductor</p>
+        <img class="NotFound-img" src="./OBJECTS.svg" alt="Texto alternativo" />
+    </div>
+    <Button Color="ButtonColor.Primary" @onclick="() => OnShowOffcanvasClick(Placement.Start)">Show left offcanvas</Button>
+    <footer class="footer-home">
+        <h2 class="logo">StreamSync</h2>
+    </footer>
 </div>
 
-@*InsertarAntesdeXvideo*@
-<div class="row mb-4">
-    <!-- Agregado mb-4 -->
-    <input type="text" class="form-control mb-2" @bind-value="DatoX" placeholder="Ingrese el url del video antes del cual desea insertar" />
-    <input type="text" class="form-control mb-2" @bind-value="NuevoVideo" placeholder="Ingrese el dato del nuevo video a insertar" />
-    <button class="btn btn-primary" @onclick="InsertBeforeX">Insertar Antes de X Video</button>
-</div>
+<Offcanvas @ref="offcanvas" Title="Offcanvas bottom" Placement="@placement">
+    <BodyTemplate>...</BodyTemplate>
+</Offcanvas>
 
-@* botones *@
-<div class="d-flex justify-content-center mb-4">
-    <!-- Agregado mb-4 -->
-    <button @onclick="First" class="me-2 btn btn-primary">Primero</button>
-    <button @onclick="Before" class="me-2 btn btn-success">Anterior</button>
-    <button @onclick="Next" class="me-2 btn btn-danger">Siguiente</button>
-    <button @onclick="Last" class="me-2 btn btn-warning">Final</button>
-    <button @onclick="DeleteFirst" class="me-2 btn btn-danger">Eliminar Primero</button>
-</div>
-
-@* para guardar *@
-<div class="row mb-4">
-    <!-- Agregado mb-4 -->
-    <input type="text" class="form-control mb-2" @bind-value="YoutubeLink" />
-    <button class="btn btn-success" @onclick="Save">Guardar</button>
-</div>
-
-<p>@Mensaje</p>
 
 @code{
     ListaEnlazadaDoble lista;
@@ -44,10 +41,20 @@
     string YoutubeId = string.Empty;
     string Mensaje = string.Empty;
 
+    private Offcanvas offcanvas = default!;
+    private Placement placement;
+
+    private async Task OnShowOffcanvasClick(Placement placement)
+    {
+        this.placement = placement;
+        await offcanvas.ShowAsync();
+    }
+
     protected override void OnInitialized()
     {
         lista = new ListaEnlazadaDoble();
     }
+
 
     void PlayVideo()
     {
