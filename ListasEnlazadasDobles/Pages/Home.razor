@@ -16,14 +16,65 @@
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"  fill="currentColor" class="bi bi-search ml-1" viewBox="0 0 16 16">
                 <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
             </svg>
-            <input class="search-input" type="text"/>
+            <input class="search-input" type="text" @bind-value="DatoBuscado" />
+            <button class="ml-1 search-input" @onclick="BuscarNodoPorDato">Buscar</button>
         </div>
     </div>
-    <div class="NotFound">
-        <h1 class="NotFound-title">No contamos con datos.</h1>
-        <p class="NotFound-parrafo">Ingrese datos para activar el reproductor</p>
-        <img class="NotFound-img" src="./OBJECTS.svg" alt="Texto alternativo" />
-    </div>
+    @if (lista.IsEmpty)
+    {
+        <div class="NotFound">
+            <h1 class="NotFound-title">No contamos con datos.</h1>
+            <p class="NotFound-parrafo">Ingrese datos para activar el reproductor</p>
+            <img class="NotFound-img" src="./OBJECTS.svg" alt="Texto alternativo" />
+        </div>
+
+    }
+    else
+    {
+        <div class="d-flex justify-content-center align-items-center mb-2">
+            <button @onclick="First" class="btnVideo">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-bar-left" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M12.5 15a.5.5 0 0 1-.5-.5v-13a.5.5 0 0 1 1 0v13a.5.5 0 0 1-.5.5M10 8a.5.5 0 0 1-.5.5H3.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L3.707 7.5H9.5a.5.5 0 0 1 .5.5" />
+                </svg>
+            </button>
+            <button @onclick="Before" class="btnVideo">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left-short" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M12 8a.5.5 0 0 1-.5.5H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H11.5a.5.5 0 0 1 .5.5" />
+                </svg>
+            </button>
+
+            <div class="d-flex justify-content-center mb-2">
+                <iframe src="@YoutubeId" width="800" height="400" frameborder="0" allowfullscreen></iframe>
+            </div>
+            <button @onclick="Next" class="btnVideo">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-right-short" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M4 8a.5.5 0 0 1 .5-.5h5.793L8.146 5.354a.5.5 0 1 1 .708-.708l3 3a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708-.708L10.293 8.5H4.5A.5.5 0 0 1 4 8" />
+                </svg>
+            </button>
+            <button @onclick="Last" class="btnVideo">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-bar-right" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M6 8a.5.5 0 0 0 .5.5h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L12.293 7.5H6.5A.5.5 0 0 0 6 8m-2.5 7a.5.5 0 0 1-.5-.5v-13a.5.5 0 0 1 1 0v13a.5.5 0 0 1-.5.5" />
+                </svg>
+            </button>
+        </div>
+        <div class="row">
+            <button class="extra" @onclick="RecorrerListaRecursivamente">Recorrido recursivo</button>
+            <button class="extra" @onclick="OrdenarLista">Ordenamiento</button>
+        </div>
+    }
+
+    @if (MensajeError != null)
+    {
+        <div class="containerMessageError">
+            <p>@MensajeError</p>
+        </div>
+    }
+    else if (Mensaje != null)
+    {
+        <div class="containerMessage">
+            <p>@Mensaje</p>
+        </div>
+    }
 
     <footer class="footer-home">
         <h2 class="logo">StreamSync</h2>
@@ -36,42 +87,35 @@
             <div class="left-container col-6">
                 <div class="insertar-container">
                     <label class="subtitle-container">Inserción de nodo</label>
-                    <button class="btn-txt insertar ">Insertar al inicio</button>
-                    <button class="btn-txt insertar ">Insertar al final</button>
-                    <button class="btn-txt insertar ">Insertar antes de un dato X</button>
-                    <button class="btn-txt insertar ">Insertar despues de un dato X</button>
-                    <button class="btn-txt insertar ">Insertar antes de una posición X</button>
-                    <button class="btn-txt insertar ">Insertar en una posición X</button>
-                    <button class="btn-txt insertar ">Insertar despues de una posición X</button>
+                    <button class="btn-txt insertar " @onclick="SaveInicio">Insertar al inicio</button>
+                    <button class="btn-txt insertar " @onclick="SaveFinal">Insertar al final</button>
+                    <button class="btn-txt insertar " @onclick="InsertarNodoAntesDeUnDatoX">Insertar antes de un dato X</button>
+                    <button class="btn-txt insertar " @onclick="InsertarNodoDespuesDeUnDatoX">Insertar despues de un dato X</button>
+                    <button class="btn-txt insertar " @onclick="InsertarNodoAntesDePosicionX">Insertar antes de una posición X</button>
+                    <button class="btn-txt insertar " @onclick="InsertarPosicionX">Insertar en una posición X</button>
+                    <button class="btn-txt insertar " @onclick="InsertarDespuesDePosicionX">Insertar despues de una posición X</button>
                 </div>
                 <div class="eliminar-container">
                     <label class="subtitle-container">Eliminación de nodo</label>
-                    <button class="btn-txt eliminar ">Eliminar al inicio</button>
-                    <button class="btn-txt eliminar ">Eliminar al final</button>
+                    <button class="btn-txt eliminar " @onclick="EliminarNodoAlInicio">>Eliminar al inicio</button>
+                    <button class="btn-txt eliminar " @onclick="EliminarAlFinal">Eliminar al final</button>
                     <button class="btn-txt eliminar ">Eliminar antes de un dato X</button>
                     <button class="btn-txt eliminar ">Eliminar un dato X</button>
-                    <button class="btn-txt eliminar ">Eliminar antes de un dato X</button>
-                    <button class="btn-txt eliminar ">Eliminar antes de una posición X</button>
+                    <button class="btn-txt eliminar " @onclick="EliminarAntesDeUnDatoX">Eliminar antes de un dato X</button>
+                    <button class="btn-txt eliminar " @onclick="EliminaNodoAntesDePosicionX">Eliminar antes de una posición X</button>
                     <button class="btn-txt eliminar ">Eliminar en una posición X</button>
-                    <button class="btn-txt eliminar ">Eliminar despues de una posición X</button>
-                </div>
-                <div class="extra-container">
-                    <label class="subtitle-container">Funciones extras</label>
-                    <button class="btn-txt extra">Recorrido recursivo</button>
-                    <button class="btn-txt extra">Ordenamiento</button>
+                    <button class="btn-txt eliminar " @onclick="EliminaNodoDespuesDePosicionX">Eliminar despues de una posición X</button>
                 </div>
             </div>
-            <div class="col-4">
-                <input type="type" name="name" value="" />
-                <input type="type" name="name" value="" />
-                <input type="type" name="name" value="" />
-                <input type="type" name="name" value="" />
-                <div>
-
-                    <button>
-
-                    </button>
-                </div>
+            <div class="col-4 d-flex justify-content-center align-items-center flex-column">
+                <label class="subtitle-container align-self-start">Ingrese el nombre del video:</label>
+                <input type="text" class="form-control mb-2" @bind-value="Nombre" placeholder="Titulo de video" />
+                <label class="subtitle-container align-self-start">Ingrese el link del video:</label>
+                <input type="text" class="form-control mb-2 align-self-start" @bind-value="YoutubeLink" placeholder="Ingrese el link del video" />
+                <label class="subtitle-container align-self-start">Ingrese la posición deseada:</label>
+                <input type="number" class="form-control mb-2" @bind-value="posicion" placeholder="Posición deseada" />
+                <label class="subtitle-container align-self-start">Ingrese un dato X:</label>
+                <input type="text" class="form-control mb-2" @bind-value="datoX" placeholder="Dato deseado" />
             </div>
         </div>
     </BodyTemplate>
@@ -243,6 +287,7 @@
         PlayVideo();
     }
 
+
     void EliminarNodoAlInicio()
     {
         Mensaje = lista.EliminarNodoInicio();
@@ -344,8 +389,10 @@
     <button class="btn btn-danger" @onclick="EliminarAlFinal">Eliminar al Final</button>
     <button class="btn btn-warning" @onclick="EliminarAntesDeUnDatoX">Eliminar Antes de un Dato X</button>
     <button class="btn btn-info" @onclick="EliminarNodoAlInicio">Eliminar Nodo al Inicio</button>
+
     <button class="btn btn-secondary" @onclick="InsertarNodoAntesDeUnDatoX">Insertar Nodo Antes de un Dato X</button>
     <button class="btn btn-dark" @onclick="InsertarPosicionX">Insertar en Posicion X</button>
+    
     <button class="btn btn-danger" @onclick="InsertarNodoDespuesDeUnDatoX">Insertar Nodo Despues de un Dato X</button>
     <button class="btn btn-warning" @onclick="BuscarNodoPorDato">Buscar Nodo</button>
     <button class="btn btn-info" @onclick="OrdenarLista">Ordenar Lista</button>
