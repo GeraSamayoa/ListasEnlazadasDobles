@@ -30,6 +30,7 @@
     <input type="number" class="form-control mb-2" @bind-value="posicion" placeholder="posicion" />
     <input type="text" class="form-control mb-2" @bind-value="datoX" placeholder="dato" />
     <input type="text" class="form-control mb-2" @bind-value="DatoBuscado" placeholder="buscar" />
+    <input type="text" class="form-control mb-2" @bind-value="Nombre" placeholder="Nombre" />
 
     <button class="btn btn-success" @onclick="SaveFinal">Guardar al Final</button>
     <button class="btn btn-primary" @onclick="SaveInicio">Guardar al Inicio</button>
@@ -65,6 +66,7 @@
     string datoX = string.Empty;
     string MensajeBuscar = string.Empty;
     string DatoBuscado = string.Empty;
+    string Nombre = string.Empty;
 
     protected override void OnInitialized()
     {
@@ -133,25 +135,27 @@
 
     void SaveFinal()
     {
-        var nuevoNodo = new Nodo(YoutubeLink);
+        var nuevoNodo = new Nodo(YoutubeLink, Nombre);
 
         Mensaje = lista.InsertarNodoAlFinal(nuevoNodo);
 
         PlayVideo();
 
         YoutubeLink = string.Empty;
+        Nombre = string.Empty;
     }
 
 
     void SaveInicio()
     {
-        var nuevoNodo = new Nodo(YoutubeLink);
+        var nuevoNodo = new Nodo(YoutubeLink, Nombre);
 
         Mensaje = lista.InsertarNodoAlInicio(nuevoNodo);
 
         PlayVideo();
 
         YoutubeLink = string.Empty;
+        Nombre = string.Empty;
     }
 
     void EliminaNodoAntesDePosicionX()
@@ -169,7 +173,7 @@
     void InsertarNodoAntesDePosicionX()
     {
 
-        Mensaje = lista.InsertarAntesDe(YoutubeLink, posicion);
+        Mensaje = lista.InsertarAntesDe(YoutubeLink, Nombre, posicion);
         PlayVideo();
     }
 
@@ -181,7 +185,7 @@
 
     void InsertarDespuesDePosicionX()
     {
-        Mensaje = lista.InsertarDespuesDePosicionX(posicion, YoutubeLink);
+        Mensaje = lista.InsertarDespuesDePosicionX(posicion, YoutubeLink, Nombre);
         PlayVideo();
     }
 
@@ -205,20 +209,20 @@
 
     void InsertarNodoAntesDeUnDatoX()
     {
-        var nuevoNodo = new Nodo(YoutubeLink);
+        var nuevoNodo = new Nodo(YoutubeLink, Nombre);
         Mensaje = lista.InsertarAntesDeUnDatoX(datoX, nuevoNodo);
         PlayVideo();
     }
 
     void InsertarPosicionX()
     {
-        Mensaje = lista.InsertarEnPosicion(posicion, YoutubeLink);
+        Mensaje = lista.InsertarEnPosicion(posicion, YoutubeLink, Nombre);
         PlayVideo();
     }
 
     void InsertarNodoDespuesDeUnDatoX()
     {
-        var nuevoNodo = new Nodo(YoutubeLink);
+        var nuevoNodo = new Nodo(YoutubeLink, Nombre);
         Mensaje = lista.InsertarDespuesDeUnDatoX(datoX, nuevoNodo);
         PlayVideo();
     }
@@ -241,7 +245,8 @@
     {
         nodosAux.Clear();
         ListaEnlazadaDoble.RecorrerRecursivamente(lista.PrimerNodo, nodosAux);
-        Mensaje = string.Join("->", nodosAux.Select(x => x.Informacion));
+        Mensaje = string.Join(" -> ", nodosAux.Select(n => $"{n.Informacion} - {n.Nombre}"));
+
         PlayVideo();
 
     }

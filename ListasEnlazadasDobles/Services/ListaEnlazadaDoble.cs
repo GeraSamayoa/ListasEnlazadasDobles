@@ -29,7 +29,7 @@ namespace ListasEnlazadasDobles.Services
             // Recorrer la lista para buscar el dato
             while (nodoActual != null)
             {
-                if (nodoActual.Informacion.Equals(dato))
+                if (nodoActual.Nombre.Equals(dato))
                 {
                     return true; // El dato ya existe en la lista
                 }
@@ -53,6 +53,7 @@ namespace ListasEnlazadasDobles.Services
             return NodoActual;
         }
 
+        // Método para insertar un nodo al final de la lista
         public string InsertarNodoAlFinal(Nodo nuevoNodo)
         {
             if (IsEmpty)
@@ -66,7 +67,7 @@ namespace ListasEnlazadasDobles.Services
                 UltimoNodo = nuevoNodo;
             }
 
-            return "Se ha Insertado el nodo al final";
+            return "Nodo agregado al final";
         }
 
         // Método para insertar un nodo al inicio de la lista
@@ -89,7 +90,7 @@ namespace ListasEnlazadasDobles.Services
                 PrimerNodo = nuevoNodo;
             }
 
-            return "Se ha insertado el nodo al inicio";
+            return "Nodo agregado el nodo al inicio";
         }
 
         // Método para eliminar un nodo antes de una posición dada
@@ -124,7 +125,7 @@ namespace ListasEnlazadasDobles.Services
                 }
 
             }
-                return "Se ha eliminado el nodo antes de la posición dada.";
+                return "¡Se ha eliminado el nodo antes de la posición dada!.";
         }
 
         // Método para eliminar un nodo después de una posición dada
@@ -159,13 +160,13 @@ namespace ListasEnlazadasDobles.Services
                 }
             }
 
-            return "Se ha eliminado el nodo después de la posición dada.";
+            return "¡Se ha eliminado el nodo después de la posición dada!";
         }
 
         // Método para insertar antes de una posición X
-        public string InsertarAntesDe(string Informacion, int posicion)
+        public string InsertarAntesDe(string Informacion, string Nombre, int posicion)
         {
-            Nodo nuevoNodo = new Nodo(Informacion);
+            Nodo nuevoNodo = new Nodo(Informacion, Nombre);
             if (posicion <= 0)
             {
 
@@ -206,7 +207,7 @@ namespace ListasEnlazadasDobles.Services
             }
 
             actual.LigaAnterior = nuevoNodo;
-            return "Nodo insertado correctamente";
+            return "Nodo agregado correctamente";
         }
 
         // Método para eliminar en una posición X
@@ -248,12 +249,12 @@ namespace ListasEnlazadasDobles.Services
             {
                 UltimoNodo = actual.LigaAnterior;
             }
-            return "nodo Eliminado correctamente";
+            return "¡Se ha eliminado el nodo correctamente!";
         }
 
 
         //////////////////////////////////////////////////////////////////////////
-        public string InsertarDespuesDePosicionX(int posicion, string dato)
+        public string InsertarDespuesDePosicionX(int posicion, string dato, string nombre)
         {
             // Verificar si el dato ya existe en la lista
             if (ExisteDatoEnLista(dato))
@@ -272,7 +273,7 @@ namespace ListasEnlazadasDobles.Services
                 return " No se puede insertar en una lista vacía.";
             }
 
-            Nodo? nuevoNodo = new Nodo(dato);
+            Nodo? nuevoNodo = new Nodo(dato, nombre);
             Nodo? nodoActual = PrimerNodo;
             int contador = 1;
             bool posicionExcede = false; // Variable para detectar si la posición excede el tamaño de la lista
@@ -311,7 +312,7 @@ namespace ListasEnlazadasDobles.Services
                 UltimoNodo = nuevoNodo;
             }
 
-            return "Nodo insertado después de la posición especificada.";
+            return $"Nodo agregado después de la posición especificada.";
         }
 
 
@@ -355,7 +356,7 @@ namespace ListasEnlazadasDobles.Services
             Nodo? nodoAEliminar = null; // Nodo que queremos eliminar
 
             // Buscar el nodo que contiene el dato x en la lista
-            while (nodoActual != null && !nodoActual.Informacion.Equals(datoX))
+            while (nodoActual != null && !nodoActual.Nombre.Equals(datoX))
             {
                 nodoAnterior = nodoActual;
                 nodoActual = nodoActual.LigaSiguiente; // Mover al siguiente nodo
@@ -459,7 +460,7 @@ namespace ListasEnlazadasDobles.Services
                 while (nodoActual != null)
                 {
                     // Verificar si se ha encontrado el dato específico
-                    if (nodoActual.Informacion == datoX)
+                    if (nodoActual.Nombre == datoX)
                     {
                         // Insertar el nuevo nodo antes del dato específico
                         if (nodoActual == PrimerNodo)
@@ -493,7 +494,7 @@ namespace ListasEnlazadasDobles.Services
         }
 
         // Método para insertar un nuevo nodo en una posición específica de la lista
-        public string InsertarEnPosicion(int posicion, string informacion)
+        public string InsertarEnPosicion(int posicion, string informacion, string nombre)
         {
             try
             {
@@ -504,7 +505,7 @@ namespace ListasEnlazadasDobles.Services
                 }
 
                 // Crear un nuevo nodo con la información proporcionada
-                var nuevoNodo = new Nodo(informacion);
+                var nuevoNodo = new Nodo(informacion, nombre);
 
                 // Si la posición es 1, insertar el nuevo nodo al inicio de la lista
                 if (posicion == 1)
@@ -567,7 +568,7 @@ namespace ListasEnlazadasDobles.Services
 
             Nodo nodoActual = PrimerNodo;
 
-            while (nodoActual != null && nodoActual.Informacion != dato)
+            while (nodoActual != null && nodoActual.Nombre != dato)
             {
                 nodoActual = nodoActual.LigaSiguiente;
             }
@@ -607,7 +608,7 @@ namespace ListasEnlazadasDobles.Services
             int index = 1;
             Nodo? nodoActual = PrimerNodo;
 
-            while (nodoActual != null && nodoActual.Informacion != dato)
+            while (nodoActual != null && nodoActual.Nombre != dato)
             {
                 nodoActual = nodoActual.LigaSiguiente;
                 index++;
@@ -618,7 +619,7 @@ namespace ListasEnlazadasDobles.Services
                 return $"Dato {dato} no encontrado";
             }
 
-            return $"Nodo encontrado: {nodoActual.Informacion} en posicion {index}";
+            return $"Nodo encontrado: {nodoActual.Nombre} en posicion {index}";
         }
 
         // Metodo para recorrer la lista recursivamente
