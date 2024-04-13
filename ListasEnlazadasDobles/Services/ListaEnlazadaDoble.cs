@@ -597,6 +597,100 @@ namespace ListasEnlazadasDobles.Services
             return "Se ha agregado el nodo despues de " + dato;
         }
 
+        public string EliminarNodoPorContenido(string dato)
+        {
+            if (IsEmpty)
+            {
+                return "La lista está vacía.";
+            }
+
+            Nodo? nodoActual = PrimerNodo;
+            Nodo? nodoAnterior = null;
+
+            while (nodoActual != null && nodoActual.Nombre != dato)
+            {
+                nodoAnterior = nodoActual;
+                nodoActual = nodoActual.LigaSiguiente;
+            }
+
+            if (nodoActual == null)
+            {
+                return "El dato no se encuentra en la lista.";
+            }
+
+            if (nodoAnterior == null)
+            {
+                // El nodo a eliminar es el primer nodo
+                PrimerNodo = nodoActual.LigaSiguiente;
+                if (PrimerNodo != null)
+                {
+                    PrimerNodo.LigaAnterior = null;
+                }
+                else
+                {
+                    UltimoNodo = null;
+                }
+            }
+            else
+            {
+                nodoAnterior.LigaSiguiente = nodoActual.LigaSiguiente;
+                if (nodoActual.LigaSiguiente != null)
+                {
+                    nodoActual.LigaSiguiente.LigaAnterior = nodoAnterior;
+                }
+                else
+                {
+                    UltimoNodo = nodoAnterior;
+                }
+            }
+
+            nodoActual = null;
+
+            return "Se ha eliminado el nodo con el dato " + dato;
+        }
+
+        public string EliminarNodoDespuesDeContenido(string dato)
+        {
+            if (IsEmpty)
+            {
+                return "La lista está vacía.";
+            }
+
+            Nodo? nodoActual = PrimerNodo;
+
+            while (nodoActual != null && nodoActual.Nombre != dato)
+            {
+                nodoActual = nodoActual.LigaSiguiente;
+            }
+
+            if (nodoActual == null)
+            {
+                return "El dato no se encuentra en la lista.";
+            }
+
+            if (nodoActual == UltimoNodo)
+            {
+                return "No hay un nodo después del último nodo.";
+            }
+
+            Nodo? nodoEliminar = nodoActual.LigaSiguiente;
+
+            nodoActual.LigaSiguiente = nodoEliminar.LigaSiguiente;
+
+            if (nodoEliminar == UltimoNodo)
+            {
+                UltimoNodo = nodoActual;
+            }
+            else
+            {
+                nodoEliminar.LigaSiguiente.LigaAnterior = nodoActual;
+            }
+
+            nodoEliminar = null;
+
+            return "Se ha eliminado el nodo después del nodo con el dato " + dato;
+        }
+
         public Nodo? BuscarNodo(string dato)
         {
             if (IsEmpty)

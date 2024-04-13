@@ -34,7 +34,7 @@
     {
         <div class="d-flex justify-content-center align-items-center mb-2">
             <button @onclick="First" class="btnVideo">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-bar-left" viewBox="0 0 16 16">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-arrow-bar-left" viewBox="0 0 16 16">
                     <path fill-rule="evenodd" d="M12.5 15a.5.5 0 0 1-.5-.5v-13a.5.5 0 0 1 1 0v13a.5.5 0 0 1-.5.5M10 8a.5.5 0 0 1-.5.5H3.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L3.707 7.5H9.5a.5.5 0 0 1 .5.5" />
                 </svg>
             </button>
@@ -58,10 +58,34 @@
                 </svg>
             </button>
         </div>
-        <div class="row">
+        <div class="botonesExtra">
             <button class="extra" @onclick="RecorrerListaRecursivamente">Recorrido recursivo</button>
             <button class="extra" @onclick="OrdenarLista">Ordenamiento</button>
         </div>
+        <div class="carousel">
+            <div class="carousel-inner">
+                @foreach (var nodo in nodosAux)
+                {
+                    <div class="carousel-item">
+                        <iframe src="@GetVideoId(nodo.Informacion)" width="800" height="400" frameborder="0" allowfullscreen></iframe>
+                        <div class="carousel-caption">
+                            <h3>@nodo.Nombre</h3>
+                        </div>
+                    </div>
+                }
+            </div>
+            <div class="btnCarrules">
+                <a class="carousel-control-prev" href="#" role="button" @onclick="PrevSlide">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="sr-only"></span>
+                </a>
+                <a class="carousel-control-next" href="#" role="button" @onclick="NextSlide">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="sr-only"></span>
+                </a>
+            </div>
+        </div>
+
     }
 
     @if (MensajeError != null)
@@ -100,11 +124,11 @@
                     <label class="subtitle-container">Eliminación de nodo</label>
                     <button class="btn-txt eliminar " @onclick="EliminarNodoAlInicio">>Eliminar al inicio</button>
                     <button class="btn-txt eliminar " @onclick="EliminarAlFinal">Eliminar al final</button>
-                    <button class="btn-txt eliminar ">Eliminar antes de un dato X</button>
-                    <button class="btn-txt eliminar ">Eliminar un dato X</button>
+                    <button class="btn-txt eliminar " @onclick="EliminarAntesDeUnDatoX">Eliminar antes de un dato X</button>
+                    <button class="btn-txt eliminar " @onclick="EliminarNodoPorContenido">Eliminar un dato X</button>
                     <button class="btn-txt eliminar " @onclick="EliminarAntesDeUnDatoX">Eliminar antes de un dato X</button>
                     <button class="btn-txt eliminar " @onclick="EliminaNodoAntesDePosicionX">Eliminar antes de una posición X</button>
-                    <button class="btn-txt eliminar ">Eliminar en una posición X</button>
+                    <button class="btn-txt eliminar " @onclick="EliminarNodoDespuesDeContenido">Eliminar en una posición X</button>
                     <button class="btn-txt eliminar " @onclick="EliminaNodoDespuesDePosicionX">Eliminar despues de una posición X</button>
                 </div>
             </div>
@@ -223,7 +247,7 @@
             return;
         };
 
-        MensajeError = string.Empty;
+        MensajeError = null;
         Mensaje = lista.InsertarNodoAlFinal(nuevoNodo);
 
         YoutubeLink = string.Empty;
@@ -308,6 +332,23 @@
         PlayVideo();
     }
 
+    void EliminarNodoPorContenido()
+    {
+        Mensaje = lista.EliminarNodoPorContenido(datoX);
+        (MensajeError, posicion) = MensajeValidator.MensajeEliminar(Mensaje, MensajeError, posicion);
+        datoX = string.Empty;
+
+        PlayVideo();
+    }
+
+    void EliminarNodoDespuesDeContenido()
+    {
+        Mensaje = lista.EliminarNodoDespuesDeContenido(datoX);
+        (MensajeError, posicion) = MensajeValidator.MensajeEliminar(Mensaje, MensajeError, posicion);
+        datoX = string.Empty;
+
+        PlayVideo();
+    }
 
     void EliminarNodoAlInicio()
     {
@@ -358,11 +399,12 @@
         if (nodoEncontrado != null)
         {
             lista.NodoActual = nodoEncontrado;
-            MensajeBuscar = $"Nodo encontrado: {nodoEncontrado.Nombre} en posición {lista.ObtenerPosicionNodo(nodoEncontrado)}";
+            MensajeError = null;
+            Mensaje = $"Nodo encontrado: {nodoEncontrado.Nombre} en posición {lista.ObtenerPosicionNodo(nodoEncontrado)}";
         }
         else
         {
-            MensajeBuscar = $"Dato {dato} no encontrado";
+            MensajeError = $"Dato {dato} no encontrado";
         }
 
         DatoBuscado = string.Empty;
@@ -387,78 +429,41 @@
         PlayVideo();
 
     }
+
+    private int currentSlide = 0;
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            currentSlide = 0;
+            ActivateSlide(currentSlide);
+        }
+    }
+
+    private void ActivateSlide(int index)
+    {
+        currentSlide = index;
+        var carouselItems = nodosAux.Select((_, i) => i == index ? "carousel-item active" : "carousel-item");
+        for (int i = 0; i < nodosAux.Count; i++)
+        {
+            nodosAux[i].Informacion = carouselItems.ElementAt(i);
+        }
+    }
+
+    private void PrevSlide()
+    {
+        currentSlide = (currentSlide - 1 + nodosAux.Count) % nodosAux.Count;
+        ActivateSlide(currentSlide);
+    }
+
+    private void NextSlide()
+    {
+        currentSlide = (currentSlide + 1) % nodosAux.Count;
+        ActivateSlide(currentSlide);
+    }
 }
 
 
 
 
-
-
-@* 
-
-      
-
-<div class="d-flex justify-content-center mb-2">
-    <iframe src="@YoutubeId" width="800" height="400" frameborder="0" allowfullscreen></iframe>
-</div>
-
-
-
-
-<div class="d-flex justify-content-center mb-2">
-    <button @onclick="First" class="me-2 btn btn-primary">Primero</button>
-    <button @onclick="Before" class="me-2 btn btn-success">Anterior</button>
-    <button @onclick="Next" class="me-2 btn btn-danger">Siguiente</button>
-    <button @onclick="Last" class="me-2 btn btn-warning">Final</button>
-</div>
-
-
-
-
-<div class="row">
-    <input type="text" class="form-control mb-2" @bind-value="YoutubeLink" placeholder="Informacio" />
-    <input type="number" class="form-control mb-2" @bind-value="posicion" placeholder="posicion" />
-    <input type="text" class="form-control mb-2" @bind-value="datoX" placeholder="dato" />
-    <input type="text" class="form-control mb-2" @bind-value="DatoBuscado" placeholder="buscar" />
-    <input type="text" class="form-control mb-2" @bind-value="Nombre" placeholder="Nombre" />
-
-    <button class="btn btn-success" @onclick="SaveFinal">Guardar al Final</button>
-    <button class="btn btn-primary" @onclick="SaveInicio">Guardar al Inicio</button>
-    <button class="btn btn-danger" @onclick="EliminaNodoAntesDePosicionX">Eliminar Nodo Antes de Posicion X</button>
-    <button class="btn btn-warning" @onclick="EliminaNodoDespuesDePosicionX">Eliminar Nodo Despues de Posicion X</button>
-    <button class="btn btn-info" @onclick="InsertarNodoAntesDePosicionX">Insertar Nodo Antes de Posicion X</button>
-    <button class="btn btn-secondary" @onclick="EliminarNodoEnPosicionX">Eliminar Nodo en Posicion X</button>
-    <button class="btn btn-dark" @onclick="InsertarDespuesDePosicionX">Insertar Despues de Posicion X</button>
-    <button class="btn btn-danger" @onclick="EliminarAlFinal">Eliminar al Final</button>
-    <button class="btn btn-warning" @onclick="EliminarAntesDeUnDatoX">Eliminar Antes de un Dato X</button>
-    <button class="btn btn-info" @onclick="EliminarNodoAlInicio">Eliminar Nodo al Inicio</button>
-
-    <button class="btn btn-secondary" @onclick="InsertarNodoAntesDeUnDatoX">Insertar Nodo Antes de un Dato X</button>
-    <button class="btn btn-dark" @onclick="InsertarPosicionX">Insertar en Posicion X</button>
-    
-    <button class="btn btn-danger" @onclick="InsertarNodoDespuesDeUnDatoX">Insertar Nodo Despues de un Dato X</button>
-    <button class="btn btn-warning" @onclick="BuscarNodoPorDato">Buscar Nodo</button>
-    <button class="btn btn-info" @onclick="OrdenarLista">Ordenar Lista</button>
-    <button class="btn btn-info" @onclick="RecorrerListaRecursivamente">Recorrer Lista Recursivamente</button>
-
-
-
-    @{
-        var contador = 1;
-    }
-
-    @foreach (var nodo in nodosAux)
-    {
-        <tr>
-            <th scope="row">@(contador++)</th>
-            <td>@nodo.Nombre | @nodo.Informacion</td>
-
-
-        </tr>
-    }
-
-
-</div>
-
-<p>@Mensaje</p>
-<p>@MensajeBuscar</p> *@
