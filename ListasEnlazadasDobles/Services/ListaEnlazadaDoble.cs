@@ -339,7 +339,7 @@ namespace ListasEnlazadasDobles.Services
                 nodoEliminar = null;// libera la memoria del nodo eliminado
             }
             Nodos--;// disminuye el contador del total de los nodos
-            return "nodo eliminado";// se retorna el mensaje de confirmación
+            return "Se ha eliminado el correctamente";// se retorna el mensaje de confirmación
         }
 
         public string EliminarAntesDeX(string datoX)
@@ -386,14 +386,14 @@ namespace ListasEnlazadasDobles.Services
                         // Liberar el nodo
                         nodoAEliminar = null;
 
-                        return "Nodo antes de " + datoX + " eliminado.";
+                        return "¡Se ha eliminado el nodo antes de " + datoX + " eliminado.";
                     }
                     else
                     {
                         // Si el nodo con el dato x es el segundo nodo
                         PrimerNodo = nodoActual; // El nodo actual se convierte en el primer nodo
                         nodoActual.LigaAnterior = null; // El nodo anterior al actual se establece como null
-                        return "Nodo antes de " + datoX + " eliminado.";
+                        return "¡Se ha eliminado Nodo antes de " + datoX + " eliminado.";
                     }
                 }
             }
@@ -434,7 +434,7 @@ namespace ListasEnlazadasDobles.Services
                         temp = null;
                     }
 
-                    return "VIDEO ELIMINADO AL INICIO";
+                    return "¡Se ha eliminado el nodo al inicio correctamente";
                 }
             }
             catch (Exception ex)
@@ -477,7 +477,7 @@ namespace ListasEnlazadasDobles.Services
                             nodoActual.LigaAnterior = nuevoNodo;
                         }
 
-                        return "Nodo insertado antes del dato X.";
+                        return "Se ha agregado el nodo antes del dato X.";
                     }
 
                     nodoActual = nodoActual.LigaSiguiente;
@@ -537,7 +537,7 @@ namespace ListasEnlazadasDobles.Services
                     nodoActual.LigaSiguiente = nuevoNodo;
                     nuevoNodo.LigaAnterior = nodoActual;
                     UltimoNodo = nuevoNodo;
-                    return $"Nodo insertado al final de la lista en la posición {posicion}.";
+                    return $"Se agregado el nodo al final de la lista en la posición {posicion}.";
                 }
                 else
                 {
@@ -546,7 +546,7 @@ namespace ListasEnlazadasDobles.Services
                     nodoActual.LigaSiguiente.LigaAnterior = nuevoNodo;
                     nodoActual.LigaSiguiente = nuevoNodo;
                     nuevoNodo.LigaAnterior = nodoActual;
-                    return $"Nodo insertado en la posición {posicion}.";
+                    return $"Se ha agregado el nodo en la posición {posicion}.";
                 }
             }
             catch (Exception ex)
@@ -594,7 +594,7 @@ namespace ListasEnlazadasDobles.Services
 
             NodoActual = nuevoNodo;
 
-            return "Nodo insertado despues de " + dato;
+            return "Se ha agregado el nodo despues de " + dato;
         }
 
         // Metodo para buscar un nodo por su informacion en una lista doblemente enlazada
@@ -630,6 +630,31 @@ namespace ListasEnlazadasDobles.Services
                 nodos.Add(nodoActual); // Agregar el nodo a la lista
                 RecorrerRecursivamente(nodoActual.LigaSiguiente, nodos);
             }
+        }
+
+        // Metodo para ordenar la lista 
+        public string OrdenarLista()
+        {
+            if (IsEmpty)
+            {
+                return "La lista está vacía, no se puede ordenar.";
+            }
+
+            List<Nodo> nodos = new List<Nodo>();
+            RecorrerRecursivamente(PrimerNodo, nodos);
+
+            nodos.Sort((nodo1, nodo2) => nodo1.Nombre.CompareTo(nodo2.Nombre));
+
+            PrimerNodo = nodos[0];
+            UltimoNodo = nodos[nodos.Count - 1];
+
+            for (int i = 0; i < nodos.Count - 1; i++)
+            {
+                nodos[i].LigaSiguiente = nodos[i + 1];
+                nodos[i + 1].LigaAnterior = nodos[i];
+            }
+
+            return "¡Lista ordenada alfabéticamente!";
         }
     }
 }
