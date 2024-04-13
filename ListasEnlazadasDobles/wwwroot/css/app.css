@@ -272,3 +272,14 @@ html, body {
     .carousel-control-next:hover {
         opacity: 0.9;
     }
+
+.carousel-inner {
+    overflow-x: auto;
+    overflow-y: hidden;
+    white-space: nowrap;
+}
+
+.carousel-item {
+    display: inline-block;
+    margin-right: 10px;
+}
