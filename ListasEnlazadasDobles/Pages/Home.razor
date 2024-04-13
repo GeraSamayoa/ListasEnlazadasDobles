@@ -63,30 +63,30 @@
             <button class="extra" @onclick="OrdenarLista">Ordenamiento</button>
         </div>
         <div class="carousel">
-            <div class="carousel-inner d-flex flex-row">
-                @foreach (var nodo in nodosAux)
-                {
-                    <div class="@nodo.Informacion">
-                        <div class="carousel-item-content">
-                            <img src="https://img.youtube.com/vi/@GetVideoId(nodo.Informacion)/0.jpg" alt="@nodo.Nombre" class="carousel-thumbnail" />
-                            <div class="carousel-caption">
-                                <h3>@nodo.Nombre</h3>
-                            </div>
-                        </div>
+    <div class="carousel-inner d-flex flex-row">
+        @foreach (var nodo in nodosAux)
+        {
+            <div class="@nodo.Informacion">
+                <div class="carousel-item-content">
+                    <img src="https://img.youtube.com/vi/@GetVideoId(nodo.Informacion)/0.jpg" alt="@nodo.Nombre" class="carousel-thumbnail" />
+                    <div class="carousel-caption">
+                        <h3>@nodo.Nombre</h3>
                     </div>
-                }
+                </div>
             </div>
-            <div class="carousel-controls">
-                <a class="carousel-control-prev" href="#" role="button" @onclick="PrevSlide">
-                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                    <span class="sr-only">Previous</span>
-                </a>
-                <a class="carousel-control-next" href="#" role="button" @onclick="NextSlide">
-                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                    <span class="sr-only">Next</span>
-                </a>
-            </div>
-        </div>
+        }
+    </div>
+    <div class="carousel-controls">
+        <a class="carousel-control-prev" href="#" role="button" @onclick="PrevSlide">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="sr-only">Previous</span>
+        </a>
+        <a class="carousel-control-next" href="#" role="button" @onclick="NextSlide">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="sr-only">Next</span>
+        </a>
+    </div>
+</div>
     }
 
     @if (MensajeError != null)
