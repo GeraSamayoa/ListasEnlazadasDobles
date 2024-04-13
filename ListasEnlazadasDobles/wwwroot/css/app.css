@@ -86,7 +86,7 @@ html, body {
     height: 173px;
     flex-shrink: 0;
     position: relative;
-    z-index: 9999;
+    z-index: 999999;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -106,7 +106,7 @@ html, body {
     height: 173px;
     flex-shrink: 0;
     position: relative;
-    z-index: 9999;
+    z-index: 999999;
     display: flex;
     align-items: center;
     justify-content: center;
