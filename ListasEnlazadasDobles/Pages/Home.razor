@@ -79,11 +79,6 @@
 
 
 @code{
-    ListaEnlazadaDoble lista;
-
-    string YoutubeLink = string.Empty;
-    string YoutubeId = string.Empty;
-    string Mensaje = string.Empty;
 
     private Offcanvas offcanvas = default!;
     private Placement placement;
@@ -94,11 +89,23 @@
         await offcanvas.ShowAsync();
     }
 
+
+    ListaEnlazadaDoble lista;
+
+    string YoutubeLink = string.Empty;
+    string YoutubeId = string.Empty;
+    string Mensaje = null;
+    string MensajeError = null;
+    int posicion = 0;
+    string datoX = string.Empty;
+    string MensajeBuscar = string.Empty;
+    string DatoBuscado = string.Empty;
+    string Nombre = string.Empty;
+
     protected override void OnInitialized()
     {
         lista = new ListaEnlazadaDoble();
     }
-
 
     void PlayVideo()
     {
@@ -138,6 +145,7 @@
     {
         lista.NodoActual = lista.PrimerNodo;
         PlayVideo();
+
     }
 
     void Before()
@@ -160,38 +168,207 @@
 
     }
 
-    void Save()
+    void SaveFinal()
     {
-        var nuevoNodo = new Nodo(YoutubeLink);
+        var nuevoNodo = new Nodo(YoutubeLink, Nombre);
 
-        Mensaje = lista.AgregarNodoAlInicio(nuevoNodo);
+        if (string.IsNullOrEmpty(YoutubeLink) || string.IsNullOrEmpty(Nombre))
+        {
+            MensajeError = "El campo Informacion y Nombre son requeridos";
+            return;
+        };
+
+        MensajeError = string.Empty;
+        Mensaje = lista.InsertarNodoAlFinal(nuevoNodo);
+
+        YoutubeLink = string.Empty;
+        Nombre = string.Empty;
+
+        PlayVideo();
+    }
+
+
+    void SaveInicio()
+    {
+        var nuevoNodo = new Nodo(YoutubeLink, Nombre);
+
+        Mensaje = lista.InsertarNodoAlInicio(nuevoNodo);
 
         PlayVideo();
 
         YoutubeLink = string.Empty;
+        Nombre = string.Empty;
     }
-    void DeleteFirst ()
+
+    void EliminaNodoAntesDePosicionX()
+    {
+        Mensaje = lista.EliminarNodoAntesDe(posicion);
+        PlayVideo();
+    }
+
+    void EliminaNodoDespuesDePosicionX()
+    {
+        Mensaje = lista.EliminarNodoDespuesDe(posicion);
+        PlayVideo();
+    }
+
+    void InsertarNodoAntesDePosicionX()
+    {
+
+        Mensaje = lista.InsertarAntesDe(YoutubeLink, Nombre, posicion);
+        PlayVideo();
+    }
+
+    void EliminarNodoEnPosicionX()
+    {
+        Mensaje = lista.EliminarEn(posicion);
+        PlayVideo();
+    }
+
+    void InsertarDespuesDePosicionX()
+    {
+        Mensaje = lista.InsertarDespuesDePosicionX(posicion, YoutubeLink, Nombre);
+        PlayVideo();
+    }
+
+    void EliminarAlFinal()
+    {
+        Mensaje = lista.QuitarAlFinal();
+        PlayVideo();
+    }
+
+    void EliminarAntesDeUnDatoX()
+    {
+        Mensaje = lista.EliminarAntesDeX(YoutubeLink);
+        PlayVideo();
+    }
+
+    void EliminarNodoAlInicio()
     {
         Mensaje = lista.EliminarNodoInicio();
         PlayVideo();
     }
-   
-    string DatoX = string.Empty;
-    string NuevoVideo = string.Empty;
 
-    void InsertBeforeX()
+    void InsertarNodoAntesDeUnDatoX()
     {
-        if (string.IsNullOrEmpty(DatoX) || string.IsNullOrEmpty(NuevoVideo))
-        {
-            Mensaje = "Debe ingresar los datos correctamente.";
-            return;
-        }
+        var nuevoNodo = new Nodo(YoutubeLink, Nombre);
+        Mensaje = lista.InsertarAntesDeUnDatoX(datoX, nuevoNodo);
+        PlayVideo();
+    }
 
-        var nuevoNodo = new Nodo(NuevoVideo);
-        Mensaje = lista.InsertAntesDeX(DatoX, nuevoNodo);
+    void InsertarPosicionX()
+    {
+        Mensaje = lista.InsertarEnPosicion(posicion, YoutubeLink, Nombre);
+        PlayVideo();
+    }
+
+    void InsertarNodoDespuesDeUnDatoX()
+    {
+        var nuevoNodo = new Nodo(YoutubeLink, Nombre);
+        Mensaje = lista.InsertarDespuesDeUnDatoX(datoX, nuevoNodo);
         PlayVideo();
     }
 
 
-}
+    void BuscarNodoPorDato()
+    {
+        var dato = DatoBuscado;
+        MensajeBuscar = lista.BuscarNodo(dato);
+        DatoBuscado = string.Empty;
+        //YoutubeLink = lista.BuscarNodo(dato);
 
+        PlayVideo();
+
+
+    }
+
+    void OrdenarLista()
+    {
+        Mensaje = lista.OrdenarLista();
+
+    }
+
+
+    private List<Nodo> nodosAux = new List<Nodo>();
+    void RecorrerListaRecursivamente()
+    {
+        nodosAux.Clear();
+        ListaEnlazadaDoble.RecorrerRecursivamente(lista.PrimerNodo, nodosAux);
+        // Mensaje = string.Join(" -> ", nodosAux.Select(n => $"{n.Informacion} - {n.Nombre}"));
+
+        PlayVideo();
+    }
+    
+  }
+
+
+
+
+
+
+@* 
+
+      
+
+<div class="d-flex justify-content-center mb-2">
+    <iframe src="@YoutubeId" width="800" height="400" frameborder="0" allowfullscreen></iframe>
+</div>
+
+
+
+
+<div class="d-flex justify-content-center mb-2">
+    <button @onclick="First" class="me-2 btn btn-primary">Primero</button>
+    <button @onclick="Before" class="me-2 btn btn-success">Anterior</button>
+    <button @onclick="Next" class="me-2 btn btn-danger">Siguiente</button>
+    <button @onclick="Last" class="me-2 btn btn-warning">Final</button>
+</div>
+
+
+
+
+<div class="row">
+    <input type="text" class="form-control mb-2" @bind-value="YoutubeLink" placeholder="Informacio" />
+    <input type="number" class="form-control mb-2" @bind-value="posicion" placeholder="posicion" />
+    <input type="text" class="form-control mb-2" @bind-value="datoX" placeholder="dato" />
+    <input type="text" class="form-control mb-2" @bind-value="DatoBuscado" placeholder="buscar" />
+    <input type="text" class="form-control mb-2" @bind-value="Nombre" placeholder="Nombre" />
+
+    <button class="btn btn-success" @onclick="SaveFinal">Guardar al Final</button>
+    <button class="btn btn-primary" @onclick="SaveInicio">Guardar al Inicio</button>
+    <button class="btn btn-danger" @onclick="EliminaNodoAntesDePosicionX">Eliminar Nodo Antes de Posicion X</button>
+    <button class="btn btn-warning" @onclick="EliminaNodoDespuesDePosicionX">Eliminar Nodo Despues de Posicion X</button>
+    <button class="btn btn-info" @onclick="InsertarNodoAntesDePosicionX">Insertar Nodo Antes de Posicion X</button>
+    <button class="btn btn-secondary" @onclick="EliminarNodoEnPosicionX">Eliminar Nodo en Posicion X</button>
+    <button class="btn btn-dark" @onclick="InsertarDespuesDePosicionX">Insertar Despues de Posicion X</button>
+    <button class="btn btn-danger" @onclick="EliminarAlFinal">Eliminar al Final</button>
+    <button class="btn btn-warning" @onclick="EliminarAntesDeUnDatoX">Eliminar Antes de un Dato X</button>
+    <button class="btn btn-info" @onclick="EliminarNodoAlInicio">Eliminar Nodo al Inicio</button>
+    <button class="btn btn-secondary" @onclick="InsertarNodoAntesDeUnDatoX">Insertar Nodo Antes de un Dato X</button>
+    <button class="btn btn-dark" @onclick="InsertarPosicionX">Insertar en Posicion X</button>
+    <button class="btn btn-danger" @onclick="InsertarNodoDespuesDeUnDatoX">Insertar Nodo Despues de un Dato X</button>
+    <button class="btn btn-warning" @onclick="BuscarNodoPorDato">Buscar Nodo</button>
+    <button class="btn btn-info" @onclick="OrdenarLista">Ordenar Lista</button>
+    <button class="btn btn-info" @onclick="RecorrerListaRecursivamente">Recorrer Lista Recursivamente</button>
+
+
+
+    @{
+        var contador = 1;
+    }
+
+    @foreach (var nodo in nodosAux)
+    {
+        <tr>
+            <th scope="row">@(contador++)</th>
+            <td>@nodo.Nombre | @nodo.Informacion</td>
+
+
+        </tr>
+    }
+
+
+</div>
+
+<p>@Mensaje</p>
+<p>@MensajeBuscar</p> *@
