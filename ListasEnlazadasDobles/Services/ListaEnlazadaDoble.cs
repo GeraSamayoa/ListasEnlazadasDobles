@@ -597,29 +597,21 @@ namespace ListasEnlazadasDobles.Services
             return "Se ha agregado el nodo despues de " + dato;
         }
 
-        // Metodo para buscar un nodo por su informacion en una lista doblemente enlazada
-        public string BuscarNodo(string dato)
+        public Nodo? BuscarNodo(string dato)
         {
             if (IsEmpty)
             {
-                return "Lista vacia no hay elementos para buscar";
+                return null;
             }
 
-            int index = 1;
             Nodo? nodoActual = PrimerNodo;
 
             while (nodoActual != null && nodoActual.Nombre != dato)
             {
                 nodoActual = nodoActual.LigaSiguiente;
-                index++;
             }
 
-            if (nodoActual == null)
-            {
-                return $"Dato {dato} no encontrado";
-            }
-
-            return $"Nodo encontrado: {nodoActual.Nombre} en posicion {index}";
+            return nodoActual;
         }
 
         // Metodo para recorrer la lista recursivamente
@@ -671,6 +663,25 @@ namespace ListasEnlazadasDobles.Services
             }
 
             return "Lista ordenada correctamente";
+        }
+
+        public int ObtenerPosicionNodo(Nodo? nodo)
+        {
+            if (nodo == null)
+            {
+                return -1;
+            }
+
+            int index = 1;
+            Nodo? nodoActual = PrimerNodo;
+
+            while (nodoActual != null && nodoActual != nodo)
+            {
+                nodoActual = nodoActual.LigaSiguiente;
+                index++;
+            }
+
+            return nodoActual == nodo ? index : -1;
         }
 
 

@@ -2,6 +2,7 @@
 @page "/"
 @using ListasEnlazadasDobles.Models
 @using ListasEnlazadasDobles.Services
+@using ListasEnlazadasDobles.Validators
 
 <PageTitle>ListaEnlazadaDoble</PageTitle>
 
@@ -78,7 +79,7 @@
     string YoutubeId = string.Empty;
     string Mensaje = null;
     string MensajeError = null;
-    int posicion = 0;
+    int? posicion = null;
     string datoX = string.Empty;
     string MensajeBuscar = string.Empty;
     string DatoBuscado = string.Empty;
@@ -159,7 +160,7 @@
             MensajeError = "El campo Informacion y Nombre son requeridos";
             return;
         };
-        
+
         MensajeError = string.Empty;
         Mensaje = lista.InsertarNodoAlFinal(nuevoNodo);
 
@@ -174,60 +175,82 @@
     {
         var nuevoNodo = new Nodo(YoutubeLink, Nombre);
 
-        Mensaje = lista.InsertarNodoAlInicio(nuevoNodo);
+        if (string.IsNullOrEmpty(YoutubeLink) || string.IsNullOrEmpty(Nombre))
+        {
+            MensajeError = "El campo Informacion y Nombre son requeridos";
+            return;
+        };
 
-        PlayVideo();
+        MensajeError = string.Empty;
+        Mensaje = lista.InsertarNodoAlInicio(nuevoNodo);
 
         YoutubeLink = string.Empty;
         Nombre = string.Empty;
+
+        PlayVideo();
     }
 
     void EliminaNodoAntesDePosicionX()
     {
-        Mensaje = lista.EliminarNodoAntesDe(posicion);
+        Mensaje = lista.EliminarNodoAntesDe(posicion ?? 0);
+        (MensajeError, posicion) = MensajeValidator.MensajeEliminar(Mensaje, MensajeError, posicion);
         PlayVideo();
     }
 
     void EliminaNodoDespuesDePosicionX()
     {
-        Mensaje = lista.EliminarNodoDespuesDe(posicion);
+        Mensaje = lista.EliminarNodoDespuesDe(posicion ?? 0);
+        (MensajeError, posicion) = MensajeValidator.MensajeEliminar(Mensaje, MensajeError, posicion);
         PlayVideo();
     }
 
     void InsertarNodoAntesDePosicionX()
     {
 
-        Mensaje = lista.InsertarAntesDe(YoutubeLink, Nombre, posicion);
+        Mensaje = lista.InsertarAntesDe(YoutubeLink, Nombre, posicion ?? 0);
+        (MensajeError,Nombre, posicion) = MensajeValidator.MensajeInsertar(Mensaje, MensajeError, posicion, Nombre);
+
+        YoutubeLink = string.Empty;
         PlayVideo();
     }
 
     void EliminarNodoEnPosicionX()
     {
-        Mensaje = lista.EliminarEn(posicion);
+        Mensaje = lista.EliminarEn(posicion ?? 0);
+        (MensajeError, posicion) = MensajeValidator.MensajeEliminar(Mensaje, MensajeError, posicion);
         PlayVideo();
     }
 
     void InsertarDespuesDePosicionX()
     {
-        Mensaje = lista.InsertarDespuesDePosicionX(posicion, YoutubeLink, Nombre);
+        Mensaje = lista.InsertarDespuesDePosicionX(posicion ?? 0, YoutubeLink, Nombre);
+        (MensajeError, Nombre, posicion) = MensajeValidator.MensajeInsertar(Mensaje, MensajeError, posicion, Nombre);
+
+        YoutubeLink = string.Empty;
         PlayVideo();
     }
 
     void EliminarAlFinal()
     {
         Mensaje = lista.QuitarAlFinal();
+        (MensajeError, posicion) = MensajeValidator.MensajeEliminar(Mensaje, MensajeError, posicion);
         PlayVideo();
     }
 
     void EliminarAntesDeUnDatoX()
     {
-        Mensaje = lista.EliminarAntesDeX(YoutubeLink);
+        Mensaje = lista.EliminarAntesDeX(datoX);
+        (MensajeError, posicion) = MensajeValidator.MensajeEliminar(Mensaje, MensajeError, posicion);
+        datoX = string.Empty;
+
         PlayVideo();
     }
 
     void EliminarNodoAlInicio()
     {
         Mensaje = lista.EliminarNodoInicio();
+        (MensajeError, posicion) = MensajeValidator.MensajeEliminar(Mensaje, MensajeError, posicion);
+
         PlayVideo();
     }
 
@@ -235,12 +258,20 @@
     {
         var nuevoNodo = new Nodo(YoutubeLink, Nombre);
         Mensaje = lista.InsertarAntesDeUnDatoX(datoX, nuevoNodo);
+
+        (MensajeError, Nombre, posicion ) = MensajeValidator.MensajeInsertar(Mensaje, MensajeError, posicion, Nombre);
+        datoX = string.Empty;
+        YoutubeLink = string.Empty;
+
         PlayVideo();
     }
 
     void InsertarPosicionX()
     {
-        Mensaje = lista.InsertarEnPosicion(posicion, YoutubeLink, Nombre);
+        Mensaje = lista.InsertarEnPosicion(posicion ?? 0, YoutubeLink, Nombre);
+        (MensajeError, Nombre, posicion) = MensajeValidator.MensajeInsertar(Mensaje, MensajeError, posicion, Nombre);
+
+        YoutubeLink = string.Empty;
         PlayVideo();
     }
 
@@ -248,6 +279,10 @@
     {
         var nuevoNodo = new Nodo(YoutubeLink, Nombre);
         Mensaje = lista.InsertarDespuesDeUnDatoX(datoX, nuevoNodo);
+        (MensajeError, Nombre, posicion) = MensajeValidator.MensajeInsertar(Mensaje, MensajeError, posicion, Nombre);
+
+        datoX = string.Empty;
+        YoutubeLink = string.Empty;
         PlayVideo();
     }
 
@@ -255,18 +290,26 @@
     void BuscarNodoPorDato()
     {
         var dato = DatoBuscado;
-        MensajeBuscar = lista.BuscarNodo(dato);
+        var nodoEncontrado = lista.BuscarNodo(dato);
+
+        if (nodoEncontrado != null)
+        {
+            lista.NodoActual = nodoEncontrado;
+            MensajeBuscar = $"Nodo encontrado: {nodoEncontrado.Nombre} en posición {lista.ObtenerPosicionNodo(nodoEncontrado)}";
+        }
+        else
+        {
+            MensajeBuscar = $"Dato {dato} no encontrado";
+        }
+
         DatoBuscado = string.Empty;
-        //YoutubeLink = lista.BuscarNodo(dato);
-
         PlayVideo();
-
-
     }
 
     void OrdenarLista()
     {
         Mensaje = lista.OrdenarLista();
+        MensajeError = MensajeValidator.MensajeOrdenar(Mensaje, MensajeError);
         
     }
 
